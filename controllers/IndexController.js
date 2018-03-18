@@ -38,8 +38,8 @@ module.exports = {
                 User.findOne({ username: steemResponse.account.name}, function(err, user) {
                     if(user) {
                         req.session.user._id = user._id;
-                        user.access_token = req.query.access_token;
-                        user.save();
+                        // user.access_token = req.query.access_token;
+                        // user.save();
 
                         res.redirect('/dashboard');
                     } else {
