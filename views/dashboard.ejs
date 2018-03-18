@@ -1,0 +1,60 @@
+<%- include('partials/header'); %>
+    <div class="page-header">
+        <h2>Your Services</h2>
+    </div>
+    <% if(services.length > 0) { %>
+    <table class="highlight responsive-table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Title</th>
+                <th>Price</th>
+                <th>Orders</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% services.forEach((service) => { %>
+            <tr>
+                <td></td>
+                <td><a href="/@<%= service.seller.username %>/<%= service.slug %>"><%= service.title %></a></td>
+                <td><%= service.price %></td>
+                <td><%= service.orders %></td>
+            </tr>
+        <% }) %>
+        </tbody>
+    </table>
+    <% } else { %>
+    <p class="flow-text">You have not added any service yet. <a href="/dashboard/add">Click here</a> to add one now.</p>
+    <% } %>
+    
+    <div class="page-header">
+        <h2>Your Orders</h2>
+    </div>
+    <% console.log(orders) %>
+    <% if(orders.length > 0) { %>
+    <table class="highlight responsive-table">
+        <thead>
+            <tr>
+                <th>Service</th>
+                <th>Price</th>
+                <th>Seller</th>
+                <th>Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% orders.forEach((order) => { %>
+            <tr>
+                <td><a href="/@<%= order.seller.username %>/<%= order.service.slug %>"><%= order.service.title %></a></td>
+                <td><%= order.service.price %></td>
+                <td><%= order.seller.username %></td>
+                <td><%= order.createdAt %></td>
+                <td></td>
+            </tr>
+        <% }) %>
+        </tbody>
+    </table>
+    <% } else { %>
+    <p class="flow-text">You have not placed any order.</p>
+    <% } %>
+<%- include('partials/footer'); %>

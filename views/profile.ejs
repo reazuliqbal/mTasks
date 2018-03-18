@@ -1,0 +1,42 @@
+<%- include('partials/header'); %>
+        <div class="profile-cover">
+            <% if(steem.json_metadata.profile.profile_image) { %>
+                <img class="profile-image" src="<%= steem.json_metadata.profile.profile_image %>" alt="">
+            <% } %>
+            <h1><% if(user.name) { %>
+                <%= user.name %>
+            <% } else { %>
+                <%= user.username %>
+            <% } %>
+            </h1>
+            <p class="h4">Voting Power: <%= (steem.voting_power/100) %>%</p>
+            <p class="h4">Reputation: <%= steem.reputation %></p>
+        </div>
+
+        <h2>Services Offered</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Title</th>
+                    <th>Price</th>
+                    <th>Orders</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            <% user.services.forEach((service) => { %>
+                <tr>
+                    <td></td>
+                    <td><a href="/@<%= user.username %>/<%= service.slug %>"><%= service.title %></a></td>
+                    <td><%= service.price %></td>
+                    <td><%= service.orders %></td>
+                    <td><button class="btn btn-success">Order</button></td>
+                </tr>
+            <% }) %>
+            </tbody>
+        </table>
+
+        
+
+<%- include('partials/footer'); %>

@@ -1,0 +1,35 @@
+body {
+    font-family: 'Roboto', sans-serif;
+}
+// PROFILE
+.profile-cover {
+    padding: 30px 20px;
+    text-align: center;
+    margin-bottom: 50px;
+    color: #fff;
+    background: #22c1c3;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #fdbb2d, #22c1c3);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #fdbb2d, #22c1c3); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+
+    .profile-image {
+        height: 120px;
+        width: 120px;
+        border: 3px solid #fff;
+        border-radius: 50%;
+        background-color: #fff;
+    }
+}
+// TEXT AREA
+textarea.materialize-textarea {
+    min-height: 200px;
+}
+
+// FOOTER
+.page-footer {
+    margin-top: 50px;
+
+    a {
+        color: #fff;
+    }
+}

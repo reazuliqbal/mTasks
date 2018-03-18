@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= title %></title>
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Roboto:400,700" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link href="/css/materialize.min.css"  media="screen,projection" rel="stylesheet"/>
+    <link href="/css/main.css" rel="stylesheet">
+
+</head>
+<body>
+    <div class="navbar-fixed">
+        <nav class="purple darken-3">
+            <div class="nav-wrapper">
+                <div class="container">
+                <a href="/" class="brand-logo">mTasks</a>
+                <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+                <ul class="right hide-on-med-and-down">
+                <% if(!session.user) { %>
+                    <li><a href="/connect">Login</a></li>
+                <% } else { %>
+                    <li><a class="dropdown-trigger" href="#!" data-target="dropdown1"><%= session.user.name %><i class="material-icons right">arrow_drop_down</i></a></li>
+                <% } %>
+                </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <ul id="dropdown1" class="dropdown-content">
+        <li><a href="/dashboard">Dashboard</a></li>
+        <li><a href="/dashboard/add">Add Service</a></li>
+        <li><a href="/dashboard/settings">Settings</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+    <ul class="sidenav" id="mobile-demo">
+    <% if(! session.user) { %>
+        <li><a href="/connect">Login</a></li>
+    <% } else { %>
+        <li><a href="/dashboard/add">Add Service</a></li>
+        <li><a href="/dashboard/settings">Settings</a></li>
+        <li><a href="/logout">Logout</a></li>
+    <% } %>
+    </ul>
+    
+    <main class="container">
