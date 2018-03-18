@@ -30,8 +30,12 @@ app.use(session({
   }
 }));
 
+var mongo_url = "mongodb://127.0.0.1:27017/microtasks";
+if(process.env.MONGOLAB_URI) {
+    mongo_url = process.env.MONGOLAB_URI;
+}
 // MongoDB connection
-mongoose.connect(process.env.MONGOLAB_URI);
+mongoose.connect(mongo_url);
 
 // Get Mongoose to use the global promise library
 mongoose.Promise = global.Promise;

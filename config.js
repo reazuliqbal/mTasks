@@ -2,13 +2,13 @@ let config = {
     port: 3000,
     auth: {
         client_id: 'micro.app',
-        redirect_uri: 'http://localhost:3000/connect'
+        redirect_uri: 'https://steemmtask.herokuapp.com/connect'
     },
     session: {
         secret: 'Relation39Orbiting53ridges'
     },
     order: {
-        redirect_uri: 'http://localhost:3000/order/complete'
+        redirect_uri: 'https://steemmtask.herokuapp.com/order/complete'
     },
     site: {
         agent_fee: 0.100,
