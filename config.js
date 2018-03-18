@@ -12,7 +12,7 @@ let config = {
     },
     site: {
         agent_fee: 0.100,
-        agent_account: 'steembangladesh',
+        agent_account: 'codebull',
         app_name: 'mTasks/0.1',
         category: 'mtasks' // Steemit main tag
     }
