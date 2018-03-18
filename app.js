@@ -31,7 +31,7 @@ app.use(session({
 }));
 
 // MongoDB connection
-mongoose.connect('mongodb://127.0.0.1/microtasks');
+mongoose.connect(process.env.MONGOLAB_URI);
 
 // Get Mongoose to use the global promise library
 mongoose.Promise = global.Promise;
