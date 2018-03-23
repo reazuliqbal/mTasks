@@ -20,7 +20,7 @@ Steem mTasks is a Fiverr like platform built on top of STEEM Blockchain using bl
 
 ## How to install and contribute
 
-Clone the repository, make changes to `config.js` according to your credentials. Open up `app.js` and change `mongo_url` or add a node environment variable called `MONGOLAB_URI`.
+Clone the repository, make changes to `example.env` according to your credentials. Rename the file to `.env`
 
 Open up Terminal and inset following commands:
 
@@ -58,5 +58,7 @@ Currently I am considering it as a working proof of concept. Lots of work to be 
 - Adding seller and buyer rating system
 - Adding all the required dashboard features for buyer, seller, and agent
 - and many more...
+
+## THIS IS NOT PRODUCTION READY
 
 ## DEMO: https://steemmtask.herokuapp.com

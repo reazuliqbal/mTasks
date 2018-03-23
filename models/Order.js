@@ -22,7 +22,9 @@ const OrderSchema = Schema({
     completed: {
         type: Boolean,
         default: false
-    }
+    },
+    ratification_deadline: Date,
+    escrow_expiration: Date
 }, {timestamps: true});
 
 const Order = mongoose.model('Order', OrderSchema);

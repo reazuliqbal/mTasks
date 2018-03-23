@@ -8,4 +8,5 @@ $(document).ready(function(){
         limit: 4
     });
     $('.modal').modal();
+    $('.tooltipped').tooltip();
 });

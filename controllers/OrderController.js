@@ -1,9 +1,9 @@
-const steem = require('steem');
+const steem = require('../modules/steem');
 const steemconnect = require('../modules/steemconnect')
 const Order = require('../models/Order');
 const Service = require('../models/Service');
 const User = require('../models/User');
-const config = require('../config')
+const config = require('../config');
 
 module.exports = {
     getOrder: async (req, res, next) => {
@@ -11,9 +11,6 @@ module.exports = {
     },
 
     postOrder: async (req, res, next) => {
-        steem.api.setOptions({ url: 'wss://testnet.steem.vc' });
-        steem.config.set('address_prefix', 'STX');
-        steem.config.set('chain_id', '79276aea5d4877d9a25892eaa01b0adf019d3e5cb12a97478df3298ccdd01673');
 
         var wif = req.body.wif,
             buyer = req.session.user.name,

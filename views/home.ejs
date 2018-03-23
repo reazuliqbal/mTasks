@@ -6,10 +6,10 @@
             <div class="col s12 m6 l3">
                 <div class="card">
                     <div class="card-image">
-                        <img src="images/service-image.jpg">
+                        <img src="<%= service.cover_image %>">
                     </div>
                     <div class="card-content">
-                        <p><%= service.title %> for <%= service.price %></p>Offered by <a href="https://steemit.com/@<%= service.seller.username %>"><%= service.seller.username %></a>
+                        <p><strong><%= service.title %></strong> for <strong><%= service.price %></strong></p>Offered by <a href="https://steemit.com/@<%= service.seller.username %>"><%= service.seller.username %></a>
                     </div>
                     <div class="card-action">
                         <a class="waves-effect waves-light btn" href="/@<%= service.seller.username %>/<%= service.slug %>">View</a>

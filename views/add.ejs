@@ -4,6 +4,7 @@
             <h1>Add a Service</h1>
         </div>
         <form action="/dashboard/add" method="post">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
             <div class="row">
                 <div class="col s12 m7 l8">
                     <div class="input-field">

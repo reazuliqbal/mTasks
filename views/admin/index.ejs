@@ -1,0 +1,91 @@
+<%- include('header'); %>
+
+    <div class="row">
+        <div class="col s12 m6 l4">
+            <div class="card light-blue accent-3">
+                <div class="card-content white-text center-align">
+                    <p class="card-title">Users</p>
+                    <h3><%= data.users_count %></h3>
+                </div>
+            </div>
+        </div>
+        <div class="col s12 m6 l4">
+            <div class="card green accent-4">
+                <div class="card-content white-text center-align">
+                    <p class="card-title">Services</p>
+                    <h3><%= data.services_count %></h3>
+                </div>
+            </div>
+        </div>
+        <div class="col s12 m6 l4">
+            <div class="card orange lighten-1">
+                <div class="card-content white-text center-align">
+                    <p class="card-title">Order Processed</p>
+                    <h3><%= data.orders_count %></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2>Recent Orders</h2>
+
+    <% if(recentOrders.length > 0) { %>
+    <table class="highlight responsive-table">
+        <thead>
+            <tr>
+                <th>Service</th>
+                <th>Price</th>
+                <th>Seller</th>
+                <th>Buyer</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        <% recentOrders.forEach((order) => { %>
+            <%
+            var status = "";
+            if(!order.seller_approved) {
+                status = "Waiting for seller's approval."
+            } else if (!order.agent_approved) {
+                status = "Waiting for agent's approval."
+            } else if(order.disputed) {
+                status = "Order was disputed."
+            }
+            %>
+            <tr>
+                <td><a href="/@<%= order.seller.username %>/<%= order.service.slug %>"><%= order.service.title %></a></td>
+                <td><%= order.service.price %></td>
+                <td><%= order.seller.username %></td>
+                <td><%= order.buyer.username %></td>
+                <td><%= order.createdAt.toDateString() %></td>
+                <td><%= status %></td>
+                <td>
+                <% if(!order.agent_approved) {%>
+                    <button type="submit" class="btn waves-effect waves-light">Approve</button>
+                <% } %>
+                </td>
+            </tr>
+        <% }) %>
+        </tbody>
+    </table>
+    <% } else { %>
+    <p class="flow-text">You have not placed any order.</p>
+    <% } %>
+
+    <h2>Categories</h2>
+
+    <% if(categories.length > 0) { %>
+    <div class="row">
+        <% categories.forEach((category) => { %>
+        <div class="col s12 m6 l4">
+        <div class="card-panel"><a href="/categories/<%= category.slug %>"><%= category.name %> <span class="badge"><%= category.service_count %></span></div>
+        </div>
+        <% }) %>
+    </div>
+    <% } else { %>
+    <p class="flow-text">No category found. Please <a href="/admin/add-category">Add Category</a></p>
+    <% } %>
+    
+<%- include('../partials/footer'); %>

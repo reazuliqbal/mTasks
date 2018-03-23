@@ -5,9 +5,9 @@
                     <article class="service">
                         <header>
                             <h1><%= title %></h1>
-                            <p>Created on <%= content.created %> by <strong><a href="/@<%= service.seller.username %>"><%= service.seller.username %></a> (<%= content.author_reputation %>)</strong> in <a href="/categories/<%= service.category.slug %>"><%= service.category.name %></a></p>
+                            <p class="flow-text">Created on <%= content.created %> by <strong><a href="/@<%= service.seller.username %>"><%= service.seller.username %></a> (<%= content.author_reputation %>)</strong> in <a href="/categories/<%= service.category.slug %>"><%= service.category.name %></a></p>
                         </header>
-                        <div><%- content.body %></div>
+                        <div class="flow-text"><%- content.body %></div>
 
                         <% if(session.user) { %>
                         <button data-target="order-modal" class="btn waves-effect waves-light modal-trigger">Order</button>
@@ -18,6 +18,7 @@
                                     <h4>Are you sure you want to order this service?</h4>
                                     <input type="hidden" name="service" value="<%= service._id %>">
                                     <input type="hidden" name="price" value="<%= service.price %>">
+                                    <!--<input type="hidden" name="price" value="0.010 SBD">-->
                                     <input type="hidden" name="seller" value="<%= service.seller.username %>">
                                     <div class="input-field">
                                         <input type="text" name="wif" id="wif" class="validate" required>

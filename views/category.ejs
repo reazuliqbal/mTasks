@@ -1,21 +1,27 @@
 <%- include('partials/header'); %>
-        <div class="page-header">
-            <h1><%= title %></h1>
+        <div class="page-header-bg" style="background-image:url('<%= category.image %>')">
+            <h2><%= title %></h2>
         </div>
+
+        <% if(services.length > 0) { %>
         <div class="row">
         <% services.forEach((service) => { %>
-            <div class="col-sm-4 col-lg-3">
-                <div class="service-card">
-                    <div class="price"><%= service.price %></div>
-                    <div class="cover-image" style="background-image:url('https://fiverr-res.cloudinary.com/images/t_main1,q_auto,f_auto/gigs/65348229/original/b611cea9ee05b5d3dcb4894b5087195bdf028ef5/convert-psd-to-bootstrap-3-6b12fd35-6541-4695-b0c6-49050b4a6cd5.png')"></div>
-                    <div class="title">
-                        <a href="/@<%= service.seller.username %>/<%= service.slug %>"><%= service.title.toLowerCase() %></a>
+            <div class="col s12 m6 l3">
+                <div class="card">
+                    <div class="card-image">
+                        <img src="/images/service-image.jpg">
                     </div>
-                    <div class="seller">
-                        Offered by <a href="https://steemit.com/@<%= service.seller.username %>"><%= service.seller.username %></a>
+                    <div class="card-content">
+                        <p><%= service.title %> for <%= service.price %></p>Offered by <a href="https://steemit.com/@<%= service.seller.username %>"><%= service.seller.username %></a>
+                    </div>
+                    <div class="card-action">
+                        <a class="waves-effect waves-light btn" href="/@<%= service.seller.username %>/<%= service.slug %>">View</a>
                     </div>
                 </div>
             </div>
-        <% }) %>
+        <% }) 
+        } else { %>
+            <p class="flow-text">There is no services added to this category.</p>
+        <% } %>
         </div>
 <%- include('partials/footer'); %>

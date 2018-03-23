@@ -15,7 +15,7 @@ module.exports = {
                     if(err) {
                         console.log(err);
                     } else if (services) {
-                        res.render('category', { title: category.name, services: services });
+                        res.render('category', { title: category.name, category: category, services: services });
                     }
                 });
             } else {

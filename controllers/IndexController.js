@@ -1,14 +1,14 @@
-const steem = require('steem');
 const Remarkable = require('remarkable');
 const md = new Remarkable();
 const dateFormat = require('dateformat');
-const steemconnect = require('../modules/steemconnect')
+const steem = require('../modules/steem');
+const steemconnect = require('../modules/steemconnect');
 const User = require('../models/User');
 const Category = require('../models/Category');
 const Service = require('../models/Service');
 
 module.exports = {
-    index: async (req, res, next) => {
+    getIndex: async (req, res, next) => {
         var categories = await Category.find({});
         Service.find({})
             .sort({'date': -1})
@@ -21,9 +21,13 @@ module.exports = {
     },
 
     getConnect: (req, res, next) => {
-        if( req.session.steemconnect ) {
+        
+        if( req.session.user ) {
             res.redirect('/dashboard');
+        } else if (req.session.admin) {
+            res.redirect('/admin');
         }
+
         if ( !req.query.access_token ) {
             let uri = steemconnect.getLoginURL();
             res.redirect(uri);
@@ -31,17 +35,24 @@ module.exports = {
             steemconnect.setAccessToken(req.query.access_token);
             steemconnect.me((err, steemResponse) => {
                 req.session.user = {
-                    steem_id: steemResponse.account.id,
                     name: steemResponse.account.name,
                     access_token: req.query.access_token
                 };
                 User.findOne({ username: steemResponse.account.name}, function(err, user) {
-                    if(user) {
+                    if(!user.admin) {
                         req.session.user._id = user._id;
-                        // user.access_token = req.query.access_token;
-                        // user.save();
 
                         res.redirect('/dashboard');
+                    } else if(user.admin) {
+                        req.session.user = null;
+
+                        req.session.admin = {
+                            _id: user._id,
+                            name: steemResponse.account.name,
+                            access_token: req.query.access_token
+                        }
+
+                        res.redirect('/admin');
                     } else {
                         res.redirect('/register');
                     }
@@ -95,7 +106,7 @@ module.exports = {
                             json_metadata = "{ \"profile\": { \"profile_image\": \"https://robohash.org/noimage.png?size=120x120\" } }";
                         }
                         res.render('profile', {
-                            title: user.name,
+                            title: (user.name) ? user.name : `Profile of @${user.username}`,
                             user: user,
                             steem: {
                                 created: dateFormat(result[0].created, "dddd, mmmm dS, yyyy, h:MM:ss TT"),

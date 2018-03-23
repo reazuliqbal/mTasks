@@ -12,12 +12,12 @@
             <p class="h4">Voting Power: <%= (steem.voting_power/100) %>%</p>
             <p class="h4">Reputation: <%= steem.reputation %></p>
         </div>
-
+        
         <h2>Services Offered</h2>
+        <% if(user.services.length > 0) { %>
         <table class="table">
             <thead>
                 <tr>
-                    <th></th>
                     <th>Title</th>
                     <th>Price</th>
                     <th>Orders</th>
@@ -27,16 +27,39 @@
             <tbody>
             <% user.services.forEach((service) => { %>
                 <tr>
-                    <td></td>
                     <td><a href="/@<%= user.username %>/<%= service.slug %>"><%= service.title %></a></td>
                     <td><%= service.price %></td>
                     <td><%= service.orders %></td>
-                    <td><button class="btn btn-success">Order</button></td>
+                    <td><a href="/@<%= user.username %>/<%= service.slug %>" class="btn waves-effect waves-light">View</a>
+                    <% if(session.user) { %>
+                        <button data-target="order-modal" class="btn waves-effect waves-light modal-trigger">Order</button>
+
+                        <div id="order-modal" class="modal">
+                            <form action="/order" method="post">
+                                <div class="modal-content">
+                                    <h4>Are you sure you want to order this service?</h4>
+                                    <input type="hidden" name="service" value="<%= service._id %>">
+                                    <input type="hidden" name="price" value="<%= service.price %>">
+                                    <input type="hidden" name="seller" value="<%= service.seller.username %>">
+                                    <div class="input-field">
+                                        <input type="text" name="wif" id="wif" class="validate" required>
+                                        <label for="wif">Active Private Key</label>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn waves-effect waves-light">Order</button>
+                                </div>
+                            </form>
+                        </div>
+                    <% } %>
+                    </td>
                 </tr>
             <% }) %>
             </tbody>
         </table>
-
+        <% } else { %>
+            <p class="flow-text">This user has not created any services yet.</p>
+        <% } %>
         
 
 <%- include('partials/footer'); %>

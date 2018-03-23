@@ -7,12 +7,14 @@ const UserSchema = new Schema({
         type: String,
         unique: true,
         required: true,
+        lowercase: true,
         trim: true
     },
     email: {
         type: String,
         unique: true,
-        trim: true
+        trim: true,
+        lowercase: true
     },
     access_token: String,
     services: [{ type: Schema.Types.ObjectId, ref:'service' }],

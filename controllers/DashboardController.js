@@ -1,17 +1,38 @@
 const slugify = require('slugify');
-const steem = require('steem');
+const Joi = require('joi');
+const steem = require('../modules/steem');
 const config = require('../config');
 const steemconnect = require('../modules/steemconnect');
 const User = require('../models/User');
 const Category = require('../models/Category');
 const Service = require('../models/Service');
 const Order = require('../models/Order');
+const JoiSchema = require('../modules/joiSchemas');
 
 module.exports = {
     getDashboard: async (req, res, next) => {
         let services = await Service.find({ seller: req.session.user._id }).populate('category').populate('seller', 'username');
         let orders = await Order.find({ buyer: req.session.user._id }).populate('seller', 'username').populate('service', 'title price slug');
-        res.render('dashboard', { title: 'Dashboard', services: services, orders: orders });
+        let receivedOrders = await Order.find({ seller: req.session.user._id, completed: false }).populate('buyer', 'username').populate('service', 'title price slug');
+        receivedOrders.forEach((order) => {
+            steem.api.getEscrow(order.buyer.username, order.escrow_id, (err, result) => {
+                Order.findById(order._id, (err, doc) => {
+                    order.seller_approved = result.to_approved;
+                    order.agent_approved = result.agent_approved;
+                    order.disputed = result.disputed;
+                    order.ratification_deadline = result.ratification_deadline;
+                    order.escrow_expiration = result.escrow_expiration;
+                    order.save();
+                });
+            });
+        });
+
+        res.render('dashboard', {
+            title: 'Dashboard',
+            services: services,
+            orders: orders,
+            receivedOrders: receivedOrders
+        });
     },
 
     getServiceAdd: (req, res, next) => {
@@ -81,11 +102,28 @@ module.exports = {
         });
     },
 
-    getSettings: (req, res, next) => {
-        res.send('Will be added later.');
+    getSettings: async (req, res, next) => {
+        var user = await User.findOne({ username: req.session.user.name });
+        res.render('settings', { title: 'Settings', user: user});
     },
 
     postSettings: (req, res, next) => {
-        res.send('Will be added later.');
+        Joi.validate(req.body, JoiSchema.UserSettings, (err, value) => {
+            if(!err) {
+                User.findOne({ username: req.session.user.name }).exec((err, user) => {
+                    user.name = value.name;
+                    user.email = value.email;
+                    user.save( (err) => {
+                        if(!err) {
+                            res.redirect('/dashboard/settings');
+                        } else {
+                            console.log(err);
+                        }
+                    });
+                });
+            } else {
+                console.log(err);
+            }
+        });
     }
 };

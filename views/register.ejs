@@ -6,6 +6,7 @@
                     </div>
                     <p class="flow-text">Welcome <strong><%= name %></strong>!</p><br>
                     <form action="/register" method="POST">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                         <div class="row">
                             <div class="input-field s12">
                                 <input type="text" id="name" name="name" class="validate">

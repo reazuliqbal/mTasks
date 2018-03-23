@@ -1,0 +1,36 @@
+<%- include('header'); %>
+        <div class="row">
+            <div class="col s12 l6">
+                <h2>Categories</h2>
+            <% if(categories.length > 0) { %>
+                <ul class="collection">
+                <% categories.forEach((category) => { %>
+                    <li class="collection-item"><a href="/categories/<%= category.slug %>"><%= category.name %></a></li>
+                <% }); %>
+                </ul>
+            <% } %>
+            </div>
+            <div class="col s12 l6">
+                <h2>Add Category</h2>
+                <form action="/dashboard/add-category" method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                    <div class="input-field">
+                        <input type="text" name="name" id="name" class="validate" required>
+                        <label for="name">Category Name</label>
+                    </div>
+
+                    <div class="input-field">
+                        <input type="text" name="image" id="image" class="validate">
+                        <label for="image">Image URL</label>
+                        <p class="helper-text">Local path from public directory is supported.</p>
+                    </div>
+
+                    <div class="input-field">
+                        <textarea name="description" id="description" class="materialize-textarea"></textarea>
+                        <label for="description">Category Description</label>
+                    </div>
+                    <button type="submit" class="btn waves-effect waves-light">Add <i class="material-icons right">send</i></button>
+                </form>
+            </div>
+        </div>
+<%- include('../partials/footer'); %>

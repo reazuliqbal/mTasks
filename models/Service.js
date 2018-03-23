@@ -9,6 +9,10 @@ const ServiceSchema = new Schema({
         index: true
     },
     price: String,
+    cover_image: {
+        type: String,
+        default: '/images/service-image.jpg'
+    },
     category: {
         type: Schema.Types.ObjectId,
         ref:'category'

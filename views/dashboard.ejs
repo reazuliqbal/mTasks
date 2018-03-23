@@ -1,7 +1,6 @@
 <%- include('partials/header'); %>
-    <div class="page-header">
-        <h2>Your Services</h2>
-    </div>
+    <h2>Your Services</h2>
+    
     <% if(services.length > 0) { %>
     <table class="highlight responsive-table">
         <thead>
@@ -27,10 +26,8 @@
     <p class="flow-text">You have not added any service yet. <a href="/dashboard/add">Click here</a> to add one now.</p>
     <% } %>
     
-    <div class="page-header">
-        <h2>Your Orders</h2>
-    </div>
-    <% console.log(orders) %>
+    <h2>Your Orders</h2>
+
     <% if(orders.length > 0) { %>
     <table class="highlight responsive-table">
         <thead>
@@ -40,16 +37,34 @@
                 <th>Seller</th>
                 <th>Date</th>
                 <th>Status</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
         <% orders.forEach((order) => { %>
+            <%
+            var status = "";
+            if(!order.seller_approved) {
+                status = "Waiting for seller's acceptance. <a class=\"tooltipped\" data-position=\"top\" data-delay=\"50\" data-tooltip=\"If the seller doesn't accept it by "+ order.ratification_deadline.toDateString() +", fund will be refunded\"><i class=\"material-icons\">priority_high</i></a>";
+            } else if (!order.agent_approved) {
+                status = "Waiting for agent's approval.";
+            } else if(order.disputed) {
+                status = "Order was disputed.";
+            }
+            %>
             <tr>
                 <td><a href="/@<%= order.seller.username %>/<%= order.service.slug %>"><%= order.service.title %></a></td>
                 <td><%= order.service.price %></td>
                 <td><%= order.seller.username %></td>
-                <td><%= order.createdAt %></td>
-                <td></td>
+                <td><%= order.createdAt.toDateString() %></td>
+                <td><%- status %></td>
+                <td>
+                <% if(order.seller_approved && order.agent_approved) {%>
+                    <button type="submit" class="btn waves-effect waves-light">Release Payment</button>
+                <% } else { %>
+                    <p>None!</p>
+                <% } %>
+                </td>
             </tr>
         <% }) %>
         </tbody>
@@ -57,4 +72,54 @@
     <% } else { %>
     <p class="flow-text">You have not placed any order.</p>
     <% } %>
+
+    <% if(services.length > 0) { %>
+
+    <h2>Orders Received</h2>
+
+    <% if(receivedOrders.length > 0) { %>
+    <table class="highlight responsive-table">
+        <thead>
+            <tr>
+                <th>Service</th>
+                <th>Price</th>
+                <th>Buyer</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% receivedOrders.forEach((order) => { %>
+            <%
+            var status = "";
+            if(!order.seller_approved) {
+                status = "Waiting for your acceptance. <a class=\"tooltipped\" data-position=\"top\" data-delay=\"50\" data-tooltip=\"If you don't accept it by "+ order.ratification_deadline.toDateString() +", fund will be refunded.\"><i class=\"material-icons\">priority_high</i></a>"
+            } else if (!order.agent_approved) {
+                status = "Waiting for agent approval."
+            } else if(order.disputed) {
+                status = "Order was disputed."
+            }
+            %>
+            <tr>
+                <td><a href="/@<%= session.user.name %>/<%= order.service.slug %>"><%= order.service.title %></a></td>
+                <td><%= order.service.price %></td>
+                <td><a href="https://steemit.com/@<%= order.buyer.username %>"><%= order.buyer.username %></a></td>
+                <td><%= order.createdAt.toDateString() %></td>
+                <td><%- status %></td>
+                <td>
+                <% if(!order.seller_approved) {%>
+                    <button type="submit" class="btn waves-effect waves-light">Accept</button>
+                    <button type="submit" class="btn waves-effect waves-light red darken-2">Decline</button>
+                <% } %>
+                </td>
+            </tr>
+        <% }) %>
+        </tbody>
+    </table>
+    <% } else { %>
+    <p class="flow-text">You have not received any order.</p>
+    <% } %>
+    <% } %>
+
 <%- include('partials/footer'); %>

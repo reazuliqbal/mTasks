@@ -6,7 +6,7 @@ const util = require('../modules/utils');
 
 var router = express.Router();
 
-router.get('/', IndexController.index);
+router.get('/', IndexController.getIndex);
 
 router.get('/connect', IndexController.getConnect);
 router.get('/logout', IndexController.getLogout);
