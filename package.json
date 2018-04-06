@@ -1,6 +1,6 @@
 {
   "name": "mtasks",
-  "version": "0.1.0",
+  "version": "0.2.0-beta",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
@@ -8,29 +8,38 @@
   },
   "dependencies": {
     "body-parser": "~1.18.2",
+    "connect-mongodb-session": "^2.0.2",
     "cookie-parser": "~1.4.3",
     "cookie-session": "^2.0.0-beta.3",
     "csurf": "^1.9.0",
     "dateformat": "^3.0.3",
     "debug": "~3.1.0",
     "dotenv": "^5.0.1",
-    "ejs": "~2.5.7",
+    "ejs": "~2.5.8",
     "express": "~4.16.3",
     "express-flash-notification": "^0.5.0",
     "express-sanitize-escape": "^1.1.0",
     "express-session": "^1.15.6",
+    "faker": "^4.1.0",
     "helmet": "^3.12.0",
     "joi": "^13.1.2",
-    "mongoose": "^5.0.11",
+    "mongoose": "^5.0.13",
     "morgan": "~1.9.0",
     "node-sass-middleware": "0.11.0",
     "remarkable": "^1.7.1",
     "sc2-sdk": "^1.0.2",
-    "serve-favicon": "~2.4.5",
+    "serve-favicon": "~2.5.0",
     "slugify": "^1.2.9",
     "steem": "^0.7.1"
   },
   "devDependencies": {
-    "nodemon": "^1.17.2"
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.10.0",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.7.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "nodemon": "^1.17.3"
   }
 }
