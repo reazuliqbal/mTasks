@@ -1,0 +1,259 @@
+<%- include('../partials/header'); %>
+
+    <div class="row">
+        <div class="col l4">
+            <div class="card light-blue">
+                <div class="card-content white-text center-align">
+                    <p class="card-title strong-text">Total Earned</p>
+                    <p class="flow-text">
+                    <% if (totalEarned.length > 0) { %>
+                        <% totalEarned.forEach((currency) => { %>
+                        <%= currency.total %> <%= currency._id %>
+                        <% }); %>
+                    <% } else { %>
+                        0 SBD 0 STEEM
+                    <% } %>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col l4">
+            <div class="card light-blue">
+                <div class="card-content white-text center-align">
+                    <p class="card-title strong-text">Orders Completed</p>
+                    <p class="flow-text"><%= ordersCompleted %></p>
+                </div>
+            </div>
+        </div>
+        <div class="col l4">
+            <div class="card light-blue">
+                <div class="card-content white-text center-align">
+                    <p class="card-title strong-text">Pending Earnings</p>
+                    <p class="flow-text">
+                    <% if (pendingEarnings.length > 0) { %>
+                        <% pendingEarnings.forEach((currency) => { %>
+                        <%= currency.total %> <%= currency._id %>
+                        <% }); %>
+                    <% } else { %>
+                        0 SBD 0 STEEM
+                    <% } %>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Your Services</h2>
+        <div class="divider"></div>
+        
+        <% if(services.length > 0) { %>
+        <table class="highlight responsive-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Title</th>
+                    <th>Price</th>
+                    <th>Orders</th>
+                    <td></td>
+                </tr>
+            </thead>
+            <tbody>
+            <% services.forEach((service) => { %>
+                <tr>
+                    <td><img src="<%= service.cover_image %>" alt="" style="width: 100px; height:auto"></td>
+                    <td><a href="/@<%= service.seller.username %>/<%= service.slug %>"><%= service.title %></a></td>
+                    <td><%= service.price %> <%= service.currency %></td>
+                    <td><%= service.orders %></td>
+                    <td class="right-align">
+                        <a href="/@<%= service.seller.username %>/<%= service.slug %>" class="btn">View</a>
+                        <% if (service.paused !== true) { %>
+                        <a href="#confirmation" class="btn light-blue modal-trigger" data-action="pause" data-id="<%= service._id %>">Pause</a>
+                        <% } else { %>
+                        <a href="#confirmation" class="btn light-blue modal-trigger" data-action="resume" data-id="<%= service._id %>">Resume</a>
+                        <% } %>
+                        <a href="#confirmation" class="btn red modal-trigger" data-action="delete" data-id="<%= service._id %>">Delete</a>
+                    </td>
+                </tr>
+            <% }) %>
+            </tbody>
+        </table>
+        <% } else { %>
+        <p class="flow-text">You have not added any service yet. <a href="/dashboard/add">Click here</a> to add one now.</p>
+        <% } %>
+    </div>
+    
+    <div class="section">
+        <h2>Placed Orders</h2>
+        <div class="divider"></div>
+
+        <% if(placedOrders.length > 0) { %>
+        <table class="highlight responsive-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Service</th>
+                    <th>Price</th>
+                    <th>Seller</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            <% placedOrders.forEach((order) => { %>
+                <%
+                var status = "";
+                if(!order.seller_approved) {
+                    status = "<span class=\"tooltipped\" data-position=\"top\" data-delay=\"50\" data-tooltip=\"If the seller doesn't accept it by "+ order.ratification_deadline.toDateString() +", fund will be refunded\">Waiting for seller's acceptance.</span>";
+                } else if (!order.agent_approved) {
+                    status = "Waiting for agent's approval.";
+                } else if (order.disputed) {
+                    status = "Order was disputed.";
+                } else if (order.completed) {
+                    status = "Order is completed.";
+                } else if (!order.delivered && !order.modification_requested) {
+                    status = "Waiting for work delivery.";
+                } else if (order.delivered && !order.modification_requested) {
+                    status = "Order was delivered.";
+                } else if (!order.delivered && order.modification_requested) {
+                    status = "You requested modification.";
+                } else if (order.delivered && order.modification_requested) {
+                    status = "Seller submitted modification.";
+                }
+                %>
+                <tr>
+                    <td><%= order.escrow_id %></td>
+                    <td><a href="/@<%= order.seller.username %>/<%= order.service.slug %>"><%= order.service.title %></a></td>
+                    <td><%= order.service.price %> <%= order.service.currency %></td>
+                    <td><%= order.seller.username %></td>
+                    <td><%= order.createdAt.toDateString() %></td>
+                    <td><%- status %></td>
+                    <td>
+                    <% if (order.delivered && !order.completed) { %>
+                        <a href="#orderManagement" class="btn modal-trigger waves-effect waves-light green" data-action="release" data-id="<%= order._id %>">Accept Delivery</a>
+                        <a href="#orderManagement" class="btn modal-trigger waves-effect waves-light black-text amber" data-action="request_modification" data-id="<%= order._id %>">Request Modification</a>
+                        <a href="#orderManagement" class="btn modal-trigger waves-effect waves-light red" data-action="dispute" data-id="<%= order._id %>">Dispute</a>
+                    <% } %>
+                    </td>
+                </tr>
+            <% }) %>
+            </tbody>
+        </table>
+
+        <p class="right-align"><a class="btn waves-effect waves-light" href="/dashboard/manage-orders/placed">View All</a></p>
+        <% } else { %>
+        <p class="flow-text">You do not have any active order. View <a href="/dashboard/manage-orders/placed">Order History</a>.</p>
+        <% } %>
+    </div>
+    
+    
+    <% if(services.length > 0) { %>
+    <div class="section">
+        <h2>Received Orders</h2>
+        <div class="divider"></div>
+
+        <% if(receivedOrders.length > 0) { %>
+        <table class="highlight responsive-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Service</th>
+                    <th>Price</th>
+                    <th>Buyer</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            <% receivedOrders.forEach((order) => { %>
+                <%
+                var status = "";
+                if(!order.seller_approved) {
+                    status = "<span class=\"tooltipped\" data-position=\"top\" data-delay=\"50\" data-tooltip=\"If you don't accept it by "+ order.ratification_deadline.toDateString() +", fund will be refunded.\">Waiting for your acceptance.</span>";
+                } else if (!order.agent_approved) {
+                    status = "Waiting for agent approval.";
+                } else if (order.disputed) {
+                    status = "Order was disputed.";
+                } else if (order.completed) {
+                    status = "Order is completed.";
+                } else if (!order.delivered && !order.modification_requested) {
+                    status = "Waiting for work delivery.";
+                } else if (order.delivered && !order.modification_requested) {
+                    status = "Order was delivered.";
+                } else if (!order.delivered && order.modification_requested) {
+                    status = "Buyer requested modification.";
+                } else if (order.delivered && order.modification_requested) {
+                    status = "You submitted modification.";
+                }
+                %>
+                <tr>
+                    <td><%= order.escrow_id %></td>
+                    <td><a href="/@<%= session.user.name %>/<%= order.service.slug %>"><%= order.service.title %></a></td>
+                    <td><%= order.service.price %> <%= order.service.currency %></td>
+                    <td><a href="https://steemit.com/@<%= order.buyer.username %>"><%= order.buyer.username %></a></td>
+                    <td><%= order.createdAt.toDateString() %></td>
+                    <td><%- status %></td>
+                    <td>
+                    <% if (!order.completed) { %>
+                        <% if(!order.seller_approved) {%>
+                            <a href="#orderManagement" class="btn modal-trigger waves-effect waves-light green" data-action="accept" data-id="<%= order._id %>">Accept</a>
+                            <a href="#orderManagement" class="btn modal-trigger waves-effect waves-light red" data-action="decline" data-id="<%= order._id %>">Decline</a>
+                        <% } else if (order.agent_approved && !order.delivered || order.modification_requested) { %>
+                            <a href="#orderManagement" class="btn modal-trigger waves-effect waves-light green" data-action="deliver" data-id="<%= order._id %>">Deliver</a>
+                            <a href="#orderManagement" class="btn modal-trigger waves-effect waves-light red" data-action="dispute" data-id="<%= order._id %>">Dispute</a>
+                        <% } else if (order.delivered && order.modification_requested) { %>
+                            <a href="#orderManagement" class="btn modal-trigger waves-effect waves-light red" data-action="dispute" data-id="<%= order._id %>">Dispute</a>
+                        <% } %>
+                    <% } %>
+                    </td>
+                </tr>
+            <% }) %>
+            </tbody>
+        </table>
+
+        <p class="right-align"><a class="btn waves-effect waves-light" href="/dashboard/manage-orders/received">View All</a></p>
+        <% } else { %>
+        <p class="flow-text">You do not have any active order. View <a href="/dashboard/manage-orders/received">Order History</a>.</p>
+        <% } %>
+    </div>
+    <% } %>
+
+    <div id="confirmation" class="modal">
+        <form action="/dashboard/manage-service" method="post">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <input type="hidden" name="action">
+            <input type="hidden" name="id">
+            <div class="modal-content">
+                <h4>Are you sure?</h4>
+                <p id="warning"></p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+                <button id="actionBtn" type="submit" class="modal-action btn">Delete</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="orderManagement" class="modal">
+        <form action="/dashboard/manage-order" method="post">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <input type="hidden" name="action">
+            <input type="hidden" name="orderId">
+            <div class="modal-content">
+                <h4>Are you sure?</h4>
+                <p id="warningOm"></p>
+                <div class="input-field">
+                    <input type="text" name="wif" required>
+                    <label for="wif">Active Private Key</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+                <button id="actionBtnOm" type="submit" class="modal-action btn">Accept</button>
+            </div>
+        </form>
+    </div>
+
+<%- include('../partials/footer'); %>

@@ -1,0 +1,141 @@
+<%- include('../partials/header') %>
+
+        <h1>Manage Orders</h1>
+
+        <p class="right-align">
+            <span class="strong-text">Filter by:</span>
+            <a href="/dashboard/manage-orders/<%= req.params.type %>/" class="btn-flat waves-effect waves-light"<%= (req.params.status) ? '' : ' disabled'; %>>All</a>
+            <a href="/dashboard/manage-orders/<%= req.params.type %>/new/" class="btn-flat waves-effect waves-light"<%= (req.params.status === 'new') ? ' disabled' : ''; %>>New Orders</a>
+            <a href="/dashboard/manage-orders/<%= req.params.type %>/approved/" class="btn-flat waves-effect waves-light"<%= (req.params.status === 'approved') ? ' disabled' : ''; %>>Approved</a>
+            <a href="/dashboard/manage-orders/<%= req.params.type %>/completed/" class="btn-flat waves-effect waves-light"<%= (req.params.status === 'completed') ? ' disabled' : '';  %>>Completed</a>
+            <a href="/dashboard/manage-orders/<%= req.params.type %>/disputed/" class="btn-flat waves-effect waves-light"<%= (req.params.status === 'disputed') ? ' disabled' : '';  %>>Disputed</a>
+        </p>
+
+        <% if (orders.length > 0) { %>
+            <table class="highlight responsive-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Service</th>
+                        <th>Price</th>
+                        <th>Buyer</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                <% orders.forEach((order) => { %>
+                    <%
+                    var status = "";
+                    if(!order.seller_approved) {
+                        status = "Waiting for seller's approval."
+                    } else if (!order.agent_approved) {
+                        status = "Waiting for agent approval.";
+                    } else if (order.disputed) {
+                        status = "Order was disputed.";
+                    } else if (order.completed) {
+                        status = "Order is completed.";
+                    } else if (!order.delivered && !order.modification_requested) {
+                        status = "Waiting for work delivery.";
+                    } else if (order.delivered && !order.modification_requested) {
+                        status = "Order was delivered.";
+                    } else if (!order.delivered && order.modification_requested) {
+                        status = "Buyer requested modification.";
+                    } else if (order.delivered && order.modification_requested) {
+                        status = "Seller submitted modification.";
+                    }
+                    %>
+                    <tr>
+                        <td><%= order.escrow_id %></td>
+                        <td><a href="/@<%= order.seller.username %>/<%= order.service.slug %>"><%= order.service.title %></a></td>
+                        <td><%= order.service.price %></td>
+                        <td><%= order.buyer.username %></td>
+                        <td><%= order.createdAt.toDateString() %></td>
+                        <td><%= status %></td>
+                        <td>
+                        <% if (!order.completed) { %>
+                            <% if(!order.seller_approved) {%>
+                                <a href="#orderManagement" class="btn modal-trigger waves-effect waves-light green" data-action="accept" data-id="<%= order._id %>">Accept</a>
+                                <a href="#orderManagement" class="btn modal-trigger waves-effect waves-light red" data-action="decline" data-id="<%= order._id %>">Decline</a>
+                            <% } else if (order.agent_approved && !order.delivered || order.modification_requested) { %>
+                                <a href="#orderManagement" class="btn modal-trigger waves-effect waves-light green" data-action="deliver" data-id="<%= order._id %>">Deliver</a>
+                                <a href="#orderManagement" class="btn modal-trigger waves-effect waves-light red" data-action="dispute" data-id="<%= order._id %>">Dispute</a>
+                            <% } else if (order.delivered && order.modification_requested) { %>
+                                <a href="#orderManagement" class="btn modal-trigger waves-effect waves-light red" data-action="dispute" data-id="<%= order._id %>">Dispute</a>
+                            <% } %>
+                        <% } %>
+                        </td>
+                    </tr>
+                <% }); %>
+                </tbody>
+            </table>
+            <% if (pages > 0) { %>
+            <ul class="pagination center-align margin-top-50">
+                <% if (current == 1) { %>
+                    <li class="disabled"><a>First</a></li>
+                <% } else { %>
+                    <li><a href="/dashboard/manage-orders/<%= req.params.type %>/<%= (req.params.status) ? `${req.params.status}/` : ''; %>1">First</a></li>
+                <% } %>
+                <% let i = (Number(current) > 5 ? Number(current) - 4 : 1) %>
+                <% if (i !== 1) { %>
+                    <li class="disabled"><a>...</a></li>
+                <% } %>
+                <% for (; i <= (Number(current) + 4) && i <= pages; i += 1) { %>
+                    <% if (i == current) { %>
+                        <li class="active"><a><%= i %></a></li>
+                    <% } else { %>
+                        <li class="waves-effect"><a href="/dashboard/manage-orders/<%= req.params.type %>/<%= (req.params.status) ? `${req.params.status}/` : ''; %><%= i %>"><%= i %></a></li>
+                    <% } %>
+                    <% if (i == Number(current) + 4 && i < pages) { %>
+                        <li class="disabled"><a>...</a></li>
+                    <% } %>
+                <% } %>
+                <% if (current == pages) { %>
+                    <li class="disabled"><a>Last</a></li>
+                <% } else { %>
+                    <li><a href="/dashboard/manage-orders/<%= req.params.type %>/<%= (req.params.type) ? `${req.params.status}/` : ''; %><%= pages %>">Last</a></li>
+                <% } %>
+            </ul>
+            <% } %>
+        <% } else { %>
+            <p class="flow-text">No orders found!</p>
+        <% } %>
+
+        <div id="confirmation" class="modal">
+        <form action="/dashboard/manage-service" method="post">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <input type="hidden" name="action">
+            <input type="hidden" name="id">
+            <div class="modal-content">
+                <h4>Are you sure?</h4>
+                <p id="warning"></p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+                <button id="actionBtn" type="submit" class="modal-action btn">Delete</button>
+            </div>
+        </form>
+    </div>
+    
+        <div id="orderManagement" class="modal">
+            <form action="/dashboard/manage-order" method="post">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                <input type="hidden" name="action">
+                <input type="hidden" name="orderId">
+                <div class="modal-content">
+                    <h4>Are you sure?</h4>
+                    <p id="warningOm"></p>
+                    <div class="input-field">
+                        <input type="text" name="wif" required>
+                        <label for="wif">Active Private Key</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+                    <button id="actionBtnOm" type="submit" class="modal-action btn">Accept</button>
+                </div>
+            </form>
+        </div>
+
+<%- include('../partials/footer') %>

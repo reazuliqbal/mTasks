@@ -1,16 +1,13 @@
 <%- include('partials/header'); %>
         <div class="profile-cover">
-            <% if(steem.json_metadata.profile.profile_image) { %>
-                <img class="profile-image" src="<%= steem.json_metadata.profile.profile_image %>" alt="">
-            <% } %>
+            <img class="profile-image" src="<%= steem.profileImage %>" alt="">
             <h1><% if(user.name) { %>
                 <%= user.name %>
             <% } else { %>
                 <%= user.username %>
             <% } %>
             </h1>
-            <p class="h4">Voting Power: <%= (steem.voting_power/100) %>%</p>
-            <p class="h4">Reputation: <%= steem.reputation %></p>
+            <p class="flow-text">Voting Power: <%= (steem.voting_power/100) %>%<br>Reputation: <%= steem.reputation %></p>
         </div>
         
         <h2>Services Offered</h2>

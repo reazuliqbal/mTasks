@@ -1,0 +1,67 @@
+<%- include('header'); %>
+        <div class="row">
+            <div class="col s12 l6">
+                <div class="card">
+                    <div class="card-panel teal white-text">
+                        <h2>Categories</h2>
+                    </div>
+                    <div class="card-content">
+                    <% if(categories.length > 0) { %>
+                        <ul class="collection">
+                        <% categories.forEach((category) => { %>
+                            <li class="collection-item row">
+                                <div class="">
+                                    <div class="col s7 m8">
+                                        <a href="/categories/<%= category.slug %>"><%= category.name %></a>
+                                    </div>
+                                    <div class="col s5 m4">
+                                        <a href="/admin/categories/<%= category._id %>" class="btn btn-small"><i class="material-icons">edit</i></a>
+                                        <a href="/admin/categories/<%= category._id %>" class="btn btn-small red"><i class="material-icons">delete</i></a>
+                                    </div>
+                                </div>
+                            </li>
+                        <% }); %>
+                        </ul>
+                    <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col s12 l6">
+                <div class="card">
+                    <div class="card-panel teal white-text">
+                        <% if (Object.keys(category).length === 0) { %>
+                        <h2>Add Category</h2>
+                        <% } else { %>
+                        <h2>Edit Category</h2>
+                        <% } %>
+                    </div>
+                    <div class="card-content">
+                        <form action="/admin/categories" method="post">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                            <% if (Object.keys(category).length !== 0) { %>
+                            <input type="hidden" name="id" value="<%= category._id %>">
+                            <% } %>
+                            <div class="input-field">
+                                <input type="text" name="name" id="name" class="validate" required value="<%= category.name %>">
+                                <label for="name">Category Name</label>
+                            </div>
+
+                            <div class="input-field">
+                                <input type="text" name="image" id="image" class="validate" value="<%= category.image %>">
+                                <label for="image">Image URL</label>
+                                <p class="helper-text">Local path from public directory is supported.</p>
+                            </div>
+
+                            <div class="input-field">
+                                <textarea name="description" id="description" class="materialize-textarea"><%= category.description %></textarea>
+                                <label for="description">Category Description</label>
+                            </div>
+                            <button type="submit" class="btn waves-effect waves-light">Submit <i class="material-icons right">send</i></button>
+                            <a href="/admin/categories" class="btn orange">Cancel</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+<%- include('footer'); %>

@@ -17,7 +17,7 @@
         <nav class="purple darken-3">
             <div class="nav-wrapper">
                 <div class="container">
-                <a href="/" class="brand-logo">mTasks <small>Admin</small></a>
+                <a href="/admin" class="brand-logo">mTasks <small>Admin</small></a>
                 <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
                 <ul class="right hide-on-med-and-down">
                 <% if(!session.admin) { %>
@@ -33,15 +33,21 @@
 
     <ul id="dropdown1" class="dropdown-content">
         <li><a href="/admin">Dashboard</a></li>
-        <li><a href="/admin/add-category">Add Category</a></li>
+        <li><a href="/admin/users">Users</a></li>
+        <li><a href="/admin/categories">Categories</a></li>
         <li><a href="/logout">Logout</a></li>
     </ul>
     <ul class="sidenav" id="mobile-demo">
     <% if(!session.admin) { %>
         <li><a href="/connect">Login</a></li>
     <% } else { %>
+        <li><a href="/admin">Dashboard</a></li>
+        <li><a href="/admin/users">Users</a></li>
+        <li><a href="/admin/categories">Categories</a></li>
         <li><a href="/admin/logout">Logout</a></li>
     <% } %>
     </ul>
     
     <main class="container">
+        <div class="content-wrapper">
+        <%- locals.flash %>

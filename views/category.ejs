@@ -12,7 +12,7 @@
                         <img src="/images/service-image.jpg">
                     </div>
                     <div class="card-content">
-                        <p><%= service.title %> for <%= service.price %></p>Offered by <a href="https://steemit.com/@<%= service.seller.username %>"><%= service.seller.username %></a>
+                        <p><%= service.title %> for <%= service.price %></p>Offered by <a href="/@<%= service.seller.username %>"><%= service.seller.username %></a>
                     </div>
                     <div class="card-action">
                         <a class="waves-effect waves-light btn" href="/@<%= service.seller.username %>/<%= service.slug %>">View</a>

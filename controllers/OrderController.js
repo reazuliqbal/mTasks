@@ -1,77 +1,82 @@
 const steem = require('../modules/steem');
-const steemconnect = require('../modules/steemconnect')
+// const steemconnect = require('../modules/steemconnect');
 const Order = require('../models/Order');
 const Service = require('../models/Service');
 const User = require('../models/User');
 const config = require('../config');
 
 module.exports = {
-    getOrder: async (req, res, next) => {
-        res.redirect('/dashboard');
-    },
+  getOrder: async (req, res) => {
+    res.redirect('/dashboard');
+  },
+  postOrder: async (req, res) => {
+    const {
+      wif,
+      seller,
+      price,
+      service,
+    } = req.body;
+    const buyer = req.session.user.name;
+    const escrowId = parseInt((Math.random() * (99999999 - 10000000)) + 10000000, 10);
+    const currency = price.split(' ');
+    const fee = `${parseFloat(config.site.agent_fee).toFixed(3)} ${currency[1]}`;
+    const jsonMeta = '';
+    let sbdAmount = '0.000 SBD';
+    let steemAmount = '0.000 STEEM';
 
-    postOrder: async (req, res, next) => {
-
-        var wif = req.body.wif,
-            buyer = req.session.user.name,
-            seller = req.body.seller,
-            price = req.body.price,
-            service = req.body.service,
-            escrow_id = parseInt(Math.random() * (99999999 - 10000000) + 10000000),
-            sbd_amount = '0.000 SBD',
-            steem_amount= '0.000 STEEM',
-            currency = price.split(' '),
-            fee = `${parseFloat(config.site.agent_fee).toFixed(3)} ${currency[1]}`,
-            json_meta= '';
-
-        if( currency[1] === 'SBD' ) {
-            sbd_amount = `${parseFloat(price).toFixed(3)} SBD`;
-        } else {
-            steem_amount = `${parseFloat(price).toFixed(3)} STEEM`;
-        }
-        
-        
-        steem.api.getDynamicGlobalProperties(function(err, response) {
-            const time = new Date(response.time + 'Z');
-            let ratification_deadline = new Date(time.getTime() + 86400 * 1000 * 3);
-            let escrow_expiration = new Date(time.getTime() + 86400 * 1000 * 30);
-
-            steem.broadcast.escrowTransfer(
-                wif,
-                buyer,
-                seller,
-                config.site.agent_account,
-                escrow_id,
-                sbd_amount,
-                steem_amount,
-                fee,
-                ratification_deadline,
-                escrow_expiration,
-                json_meta,
-                async (err, response) => {
-                    if(!err && response.ref_block_num) {
-                        var seller_data = await User.findOne({ username: seller });
-
-                        var order = new Order();
-                            order.service = service;
-                            order.escrow_id = escrow_id;
-                            order.seller = seller_data._id;
-                            order.buyer = req.session.user._id;
-                            order.block_num = response.block_num;
-
-                        await order.save( async (err) => {
-                            await Service.updateOne({ _id: req.body.service }, {$inc: {orders: 1}});
-                            res.render('thankyou', { title: 'Thank you', order: order });
-                        });
-                    } else {
-                        console.error(err);
-                    }
-                }
-            );
-        });
-    },
-
-    getOrderComplete: (req, res, next) => {
-
+    if (currency[1] === 'SBD') {
+      sbdAmount = `${parseFloat(price).toFixed(3)} SBD`;
+    } else {
+      steemAmount = `${parseFloat(price).toFixed(3)} STEEM`;
     }
-}
+
+
+    steem.api.getDynamicGlobalProperties((err, response) => {
+      const time = new Date(`${response.time}Z`);
+      const ratificationDeadline = new Date(time.getTime() + (86400 * 1000 * 3));
+      const escrowExpiration = new Date(time.getTime() + (86400 * 1000 * 30));
+
+      steem.broadcast.escrowTransfer(
+        wif,
+        buyer,
+        seller,
+        config.site.agent_account,
+        escrowId,
+        sbdAmount,
+        steemAmount,
+        fee,
+        ratificationDeadline,
+        escrowExpiration,
+        jsonMeta,
+        async (err, response) => {
+          if (!err && response.ref_block_num) {
+            const sellerData = await User.findOne({ username: seller });
+
+            const order = new Order();
+            order.service = service;
+            order.escrow_id = escrowId;
+            order.seller = sellerData._id;
+            order.buyer = req.session.user._id;
+            order.block_num = response.block_num;
+            order.escrow_expiration = escrowExpiration;
+            order.ratification_deadline = ratificationDeadline;
+
+            await order.save(async (err) => {
+              if (!err) {
+                await Service.updateOne({ _id: req.body.service }, { $inc: { orders: 1 } });
+                res.render('thankyou', { title: 'Thank you', order });
+              } else {
+                console.log(err);
+              }
+            });
+          } else {
+            console.error(err);
+          }
+        },
+      );
+    });
+  },
+  getOrderComplete: (req, res) => {
+    res.send('Order Completed!');
+  },
+};

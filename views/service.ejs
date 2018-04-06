@@ -1,37 +1,45 @@
 <%- include('partials/header') %>
-        <div class="container">
-            <div class="row">
-                <div class="col offset-lg2 lg8">
-                    <article class="service">
-                        <header>
-                            <h1><%= title %></h1>
-                            <p class="flow-text">Created on <%= content.created %> by <strong><a href="/@<%= service.seller.username %>"><%= service.seller.username %></a> (<%= content.author_reputation %>)</strong> in <a href="/categories/<%= service.category.slug %>"><%= service.category.name %></a></p>
-                        </header>
-                        <div class="flow-text"><%- content.body %></div>
+        <div class="row">
+            <div class="col l7 xl8">
+                <article class="service">
+                    <header>
+                        <h1><%= title %></h1>
+                        <p class="flow-text">Created on <%= content.created %> by <strong><a href="/@<%= service.seller.username %>"><%= service.seller.username %></a> (<%= content.author_reputation %>)</strong> in <a href="/categories/<%= service.category.slug %>"><%= service.category.name %></a></p>
+                    </header>
+                    <div class="flow-text"><%- content.body %></div>
+                </article>
+            </div>
+            <div class="col l5 xl4">
+                <div class="card-panel margin-top-50">
+                <h4>Price: <%= service.price %> <%= service.currency %></h4>
+                <% if (session.user) { %>
+                    <% if (service.paused !== true) { %>
+                    <button data-target="order-modal" class="btn green waves-effect waves-light modal-trigger btn-large margin-top-50">Order It <i class="material-icons medium right">shopping_cart</i></button>
 
-                        <% if(session.user) { %>
-                        <button data-target="order-modal" class="btn waves-effect waves-light modal-trigger">Order</button>
-
-                        <div id="order-modal" class="modal">
-                            <form action="/order" method="post">
-                                <div class="modal-content">
-                                    <h4>Are you sure you want to order this service?</h4>
-                                    <input type="hidden" name="service" value="<%= service._id %>">
-                                    <input type="hidden" name="price" value="<%= service.price %>">
-                                    <!--<input type="hidden" name="price" value="0.010 SBD">-->
-                                    <input type="hidden" name="seller" value="<%= service.seller.username %>">
-                                    <div class="input-field">
-                                        <input type="text" name="wif" id="wif" class="validate" required>
-                                        <label for="wif">Active Private Key</label>
-                                    </div>
+                    <div id="order-modal" class="modal">
+                        <form action="/order" method="post">
+                            <div class="modal-content">
+                                <h4>Are you sure you want to order this service?</h4>
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                                <input type="hidden" name="service" value="<%= service._id %>">
+                                <input type="hidden" name="price" value="<%= service.price %>">
+                                <input type="hidden" name="seller" value="<%= service.seller.username %>">
+                                <div class="input-field">
+                                    <input type="text" name="wif" id="wif" class="validate" required>
+                                    <label for="wif">Active Private Key</label>
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn waves-effect waves-light">Order</button>
-                                </div>
-                            </form>
-                        </div>
-                        <% } %>
-                    </article>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn green waves-effect waves-light">Order</button>
+                            </div>
+                        </form>
+                    </div>
+                    <% } else { %>
+                    <p class="flow-text grey-text">The seller has paused this service.</p>
+                    <% } %>
+                <% } else { %>
+                    <a href="/connect" class="btn">Login to Order</a>
+                <% } %>
                 </div>
             </div>
         </div>

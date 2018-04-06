@@ -1,17 +1,17 @@
 const express = require('express');
 const path = require('path');
-const favicon = require('serve-favicon');
+// const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const sassMiddleware = require('node-sass-middleware');
 const mongoose = require('mongoose');
 const session = require('express-session');
-const cookieSession = require('cookie-session');
 const expressSanitized = require('express-sanitize-escape');
 const helmet = require('helmet');
 const csrf = require('csurf');
 const flash = require('express-flash-notification');
+const MongoDBStore = require('connect-mongodb-session')(session);
 require('dotenv').config();
 
 const index = require('./routes/index');
@@ -21,44 +21,41 @@ const order = require('./routes/order');
 const admin = require('./routes/admin');
 const profile = require('./routes/profile');
 
-const config = require('./config')
+const app = express();
 
-var app = express();
+const sessionStore = new MongoDBStore({
+  uri: process.env.MONGODB,
+  databaseName: process.env.MONGODB_NAME,
+  collection: process.env.SESSION_COLLECTION,
+});
 
 app.use(helmet());
 
-app.set('trust proxy', 1) // trust first proxy
+app.set('trust proxy', 1); // trust first proxy
 
-var expiryDate = new Date(Date.now() + 60 * 60 * 24 * 7 * 1000) // 1 week
-app.use(cookieSession({
-  name: 'session',
-  keys: [
-    process.env.COOKIE_KEY1,
-    process.env.COOKIE_KEY2
-  ],
+app.use(session({
+  secret: process.env.SESSION_KEY,
   cookie: {
-    expires: expiryDate
-  }
+    maxAge: 1000 * 60 * 60 * 24,
+  },
+  store: sessionStore,
+  resave: false,
+  saveUninitialized: true,
+  name: 'session',
 }));
 
 // MongoDB connection
-mongoose.connect(process.env.MONGO_DB);
+mongoose.connect(process.env.MONGODB);
 
 // Get Mongoose to use the global promise library
 mongoose.Promise = global.Promise;
-
-//Get the default connection
-var db = mongoose.connection;
-
-//Bind connection to error event (to get notification of connection errors)
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+// app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -68,12 +65,39 @@ app.use(sassMiddleware({
   src: path.join(__dirname, 'public'),
   dest: path.join(__dirname, 'public'),
   indentedSyntax: false, // true = .sass and false = .scss
-  sourceMap: true
+  sourceMap: true,
 }));
 app.use(csrf({ cookie: true }));
+
+const flashNotificationOptions = {
+  beforeSingleRender: (item, callback) => {
+    if (item.type) {
+      switch (item.type) {
+        case 'success':
+          item.type = 'Success';
+          item.alertClass = 'green white-text';
+          break;
+        case 'info':
+          item.type = 'Info';
+          item.alertClass = 'light-blue lighten-3';
+          break;
+        case 'error':
+          item.type = 'Error';
+          item.alertClass = 'deep-orange white-text';
+          break;
+        default:
+
+          break;
+      }
+    }
+    callback(null, item);
+  },
+};
+app.use(flash(app, flashNotificationOptions));
+
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
   res.locals.session = req.session;
   res.locals.csrfToken = req.csrfToken();
   next();
@@ -87,14 +111,14 @@ app.use('/admin', admin);
 app.use('/', profile);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
+app.use((req, res, next) => {
+  const err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use((err, req, res) => {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

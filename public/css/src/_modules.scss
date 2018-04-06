@@ -6,12 +6,30 @@ strong {
 }
 h1, h2, h3 {
     font-weight: 500;
+    margin-top: 20px;
 }
 h1 {
     font-size: 3rem;
 }
 h2 {
     font-size: 2.5rem;
+}
+.content-wrapper {
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+.card,
+.card-panel {
+    h1, h2, h3 {
+        margin: 0;
+    }
+    h2 {
+        font-size: 30px;
+    }
+}
+//
+.alert {
+    margin: 0 .75rem 30px .75rem;
 }
 // PAGE HEADER
 .page-header-bg {
@@ -61,6 +79,14 @@ h2 {
         background-color: #fff;
     }
 }
+// SERVICE
+.service {
+    img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+    }
+}
 // TEXT AREA
 textarea.materialize-textarea {
     min-height: 200px;
@@ -68,8 +94,6 @@ textarea.materialize-textarea {
 
 // FOOTER
 .page-footer {
-    margin-top: 50px;
-
     a {
         color: #fff;
     }

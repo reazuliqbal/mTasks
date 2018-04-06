@@ -1,4 +1,4 @@
-<%- include('partials/header'); %>
+<%- include('../partials/header'); %>
         
         <div class="page-header">
             <h1>Add a Service</h1>
@@ -15,7 +15,7 @@
                 <div class="col s12 m5 l4">
                     <div class="input-field">
                         <select name="category" id="category">
-                            <option value="" disabled selected>Choose your option</option>
+                            <option value="" disabled selected>Choose a category</option>
                             <% categories.forEach( function(category) { %>
                             <option value="<%= category.name %>"><%= category.name %></option>
                             <% }); %>
@@ -36,6 +36,14 @@
                     <div class="input-field">
                         <textarea name="description" id="description" class="materialize-textarea"></textarea>
                         <label for="description">Description</label>
+                        <div class="helper-text">Write about what you are offering. Keep it concise and organized.</div>
+                    </div>
+                </div>
+                <div class="col s12">
+                    <div class="input-field">
+                        <textarea name="requirements" id="requirements" class="materialize-textarea"></textarea>
+                        <label for="requirements">Requirements</label>
+                        <div class="helper-text">List what you need to do this task.</div>
                     </div>
                 </div>
             </div>
@@ -68,4 +76,4 @@
             </div>
         </form>
 
-<%- include('partials/footer'); %>
+<%- include('../partials/footer'); %>

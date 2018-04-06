@@ -5,13 +5,31 @@ strong {
   font-weight: 500; }
 
 h1, h2, h3 {
-  font-weight: 500; }
+  font-weight: 500;
+  margin-top: 20px; }
 
 h1 {
   font-size: 3rem; }
 
 h2 {
   font-size: 2.5rem; }
+
+.content-wrapper {
+  padding-top: 50px;
+  padding-bottom: 50px; }
+
+.card h1, .card h2, .card h3,
+.card-panel h1,
+.card-panel h2,
+.card-panel h3 {
+  margin: 0; }
+
+.card h2,
+.card-panel h2 {
+  font-size: 30px; }
+
+.alert {
+  margin: 0 .75rem 30px .75rem; }
 
 .page-header-bg {
   min-height: 300px;
@@ -55,12 +73,24 @@ h2 {
     border-radius: 50%;
     background-color: #fff; }
 
+.service img {
+  max-width: 100%;
+  height: auto;
+  display: block; }
+
 textarea.materialize-textarea {
   min-height: 200px; }
 
-.page-footer {
-  margin-top: 50px; }
-  .page-footer a {
-    color: #fff; }
+.page-footer a {
+  color: #fff; }
+
+.margin-top-30 {
+  margin-top: 30px !important; }
+
+.margin-top-50 {
+  margin-top: 50px !important; }
+
+.strong-text {
+  font-weight: 500 !important; }
 
 /*# sourceMappingURL=main.css.map */

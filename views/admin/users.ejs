@@ -1,0 +1,52 @@
+<%- include('header'); %>
+        <h2>Users</h2>
+        <p class="right-align">Showing <strong><%= current*20 %></strong> of <strong><%= count %></strong></p>
+        <table class="highlight responsive-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Registered On</th>
+                </tr>
+            </thead>
+            <tbody>
+            <% users.forEach((user) => { %>
+                <tr>
+                    <td><%= user.name %></td>
+                    <td><a href="/@<%= user.username %>"><%= user.username %></a></td>
+                    <td><%= user.email %></td>
+                    <td><%= user.createdAt.toDateString() %></td>
+                </tr>
+            <% }); %>
+            </tbody>
+        </table>
+        <% if (pages > 0) { %>
+        <ul class="pagination center-align margin-top-50">
+            <% if (current == 1) { %>
+                <li class="disabled"><a>First</a></li>
+            <% } else { %>
+                <li><a href="/admin/users/1">First</a></li>
+            <% } %>
+            <% let i = (Number(current) > 5 ? Number(current) - 4 : 1) %>
+            <% if (i !== 1) { %>
+                <li class="disabled"><a>...</a></li>
+            <% } %>
+            <% for (; i <= (Number(current) + 4) && i <= pages; i += 1) { %>
+                <% if (i == current) { %>
+                    <li class="active"><a><%= i %></a></li>
+                <% } else { %>
+                    <li class="waves-effect"><a href="/admin/users/<%= i %>"><%= i %></a></li>
+                <% } %>
+                <% if (i == Number(current) + 4 && i < pages) { %>
+                    <li class="disabled"><a>...</a></li>
+                <% } %>
+            <% } %>
+            <% if (current == pages) { %>
+                <li class="disabled"><a>Last</a></li>
+            <% } else { %>
+                <li><a href="/admin/users/<%= pages %>">Last</a></li>
+            <% } %>
+        </ul>
+        <% } %>
+<%- include('footer'); %>
