@@ -39,20 +39,22 @@ module.exports = {
           access_token: req.query.access_token,
         };
         User.findOne({ username: steemResponse.account.name }, (err, user) => {
-          if (!user.admin) {
-            req.session.user._id = user._id;
+          if (user) {
+            if (!user.admin) {
+              req.session.user._id = user._id;
 
-            res.redirect('/dashboard');
-          } else if (user.admin) {
-            req.session.user = null;
+              res.redirect('/dashboard');
+            } else if (user.admin) {
+              req.session.user = null;
 
-            req.session.admin = {
-              _id: user._id,
-              name: steemResponse.account.name,
-              access_token: req.query.access_token,
-            };
+              req.session.admin = {
+                _id: user._id,
+                name: steemResponse.account.name,
+                access_token: req.query.access_token,
+              };
 
-            res.redirect('/admin');
+              res.redirect('/admin');
+            }
           } else {
             res.redirect('/register');
           }
