@@ -20,14 +20,9 @@
                         <form action="/order" method="post">
                             <div class="modal-content">
                                 <h4>Are you sure you want to order this service?</h4>
+                                <p class="flow-text">You will be redirected to SteemConnect to approve the transaction. Do not change URL parameters otherwise order will not be approved.</p>
                                 <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-                                <input type="hidden" name="service" value="<%= service._id %>">
-                                <input type="hidden" name="price" value="<%= service.price %>">
-                                <input type="hidden" name="seller" value="<%= service.seller.username %>">
-                                <div class="input-field">
-                                    <input type="text" name="wif" id="wif" class="validate" required>
-                                    <label for="wif">Active Private Key</label>
-                                </div>
+                                <input type="hidden" name="serviceId" value="<%= service._id %>">
                             </div>
                             <div class="modal-footer">
                                 <button type="submit" class="btn green waves-effect waves-light">Order</button>
