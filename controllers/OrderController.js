@@ -21,7 +21,7 @@ module.exports = {
         let steemAmount = '0.000 STEEM';
 
         if (service.currency === 'SBD') {
-          sbdAmount = '0.010 SBD'; // `${parseFloat(service.price).toFixed(3)} SBD`;
+          sbdAmount = `${parseFloat(service.price).toFixed(3)} SBD`;
         } else {
           steemAmount = `${parseFloat(service.price).toFixed(3)} STEEM`;
         }
