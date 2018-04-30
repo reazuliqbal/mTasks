@@ -8,4 +8,6 @@ router.route('/')
   .get(util.isAuthenticated, OrderController.getOrder)
   .post(util.isAuthenticated, OrderController.postOrder);
 
+router.get('/completed', util.isAuthenticated, OrderController.getOrderCompleted);
+
 module.exports = router;
