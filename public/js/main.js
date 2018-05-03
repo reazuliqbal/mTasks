@@ -74,16 +74,17 @@ $(document).ready(function() {
 
         case 'deliver':
           $('p#warningOm').text('You are delivering the order to buyer. If buyer accepts, you\'ll receive payment right away.');
-          $('#orderManagement .input-field').hide();
-          $('#orderManagement input[name=wif]').attr('required', false);
           $('button#actionBtnOm').toggleClass('green').text('Deliver');
         break;
 
         case 'request_modification':
-          $('p#warningOm').text('You are about to request modification on the order. ');
-          $('#orderManagement .input-field').hide();
-          $('#orderManagement input[name=wif]').attr('required', false);
+          $('p#warningOm').text('You are about to request modification on the order.');
           $('button#actionBtnOm').toggleClass('amber').text('Request Modification');
+        break;
+
+        case 'release':
+          $('p#warningOm').text('You are about to accept delivery of the order. Payment will be released to the seller.');
+          $('button#actionBtnOm').toggleClass('green').text('Accept Delivery');
         break;
       }
 
@@ -96,6 +97,5 @@ $(document).ready(function() {
       $('button#actionBtnOm').removeClass('red').removeClass('green').removeClass('amber');
       $('#orderManagement input[name=action]').val('');
       $('#orderManagement input[name=orderId]').val('');
-      $('#orderManagement input[name=wif]').val('');
     }
 });

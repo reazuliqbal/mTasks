@@ -9,7 +9,7 @@
             </h1>
             <p class="flow-text">Voting Power: <%= (steem.voting_power/100) %>%<br>Reputation: <%= steem.reputation %></p>
         </div>
-        
+
         <h2>Services Offered</h2>
         <% if(user.services.length > 0) { %>
         <table class="table">
@@ -25,7 +25,7 @@
             <% user.services.forEach((service) => { %>
                 <tr>
                     <td><a href="/@<%= user.username %>/<%= service.slug %>"><%= service.title %></a></td>
-                    <td><%= service.price %></td>
+                    <td><%= service.price %> <%= service.currency %></td>
                     <td><%= service.orders %></td>
                     <td><a href="/@<%= user.username %>/<%= service.slug %>" class="btn waves-effect waves-light">View</a>
                     <% if(session.user) { %>
@@ -57,6 +57,6 @@
         <% } else { %>
             <p class="flow-text">This user has not created any services yet.</p>
         <% } %>
-        
+
 
 <%- include('partials/footer'); %>

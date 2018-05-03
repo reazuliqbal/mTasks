@@ -22,7 +22,7 @@ $(document).ready(function() {
 
       switch (action) {
         case 'approve':
-          $('p#warningOm').text('Your approval is necessary as you are the agent. Please enter agent account\'s private key.');
+          $('p#warningOm').text('Your approval is necessary as you are the agent.');
           $('button#actionBtnOm').toggleClass('green').text('Approve');
         break;
 
