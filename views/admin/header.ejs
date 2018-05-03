@@ -34,6 +34,7 @@
     <ul id="dropdown1" class="dropdown-content">
         <li><a href="/admin">Dashboard</a></li>
         <li><a href="/admin/users">Users</a></li>
+        <li><a href="/admin/manage-orders/">Orders</a></li>
         <li><a href="/admin/categories">Categories</a></li>
         <li><a href="/logout">Logout</a></li>
     </ul>
@@ -43,11 +44,12 @@
     <% } else { %>
         <li><a href="/admin">Dashboard</a></li>
         <li><a href="/admin/users">Users</a></li>
+        <li><a href="/admin/manage-orders/">Orders</a></li>
         <li><a href="/admin/categories">Categories</a></li>
         <li><a href="/admin/logout">Logout</a></li>
     <% } %>
     </ul>
-    
+
     <main class="container">
         <div class="content-wrapper">
         <%- locals.flash %>

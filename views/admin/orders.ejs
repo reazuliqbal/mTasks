@@ -98,7 +98,7 @@
         <% } else { %>
             <p class="flow-text">No orders found!</p>
         <% } %>
-    
+
         <div id="orderManagement" class="modal">
             <form action="/admin/manage-orders" method="post">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
@@ -107,10 +107,6 @@
                 <div class="modal-content">
                     <h4>Are you sure?</h4>
                     <p id="warningOm"></p>
-                    <div class="input-field">
-                        <input type="text" name="wif" required>
-                        <label for="wif">Active Private Key</label>
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
