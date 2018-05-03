@@ -1,3 +1,4 @@
+const { forEach } = require('p-iteration');
 const steem = require('../modules/steem');
 const steemconnect = require('../modules/steemconnect');
 const Order = require('../models/Order');
@@ -41,7 +42,7 @@ module.exports = {
 
           await order.save((err) => {
             if (!err) {
-              const returnURL = `${config.order.redirect_uri}?escrowId=${escrowId}&buyer=${buyer}`;
+              const returnURL = `${config.order.redirect_uri}?escrowId=${escrowId}`;
 
               const hotSignLink = steemconnect.sign('escrow_transfer', {
                 from: buyer,
@@ -69,20 +70,125 @@ module.exports = {
     });
   },
   getOrderCompleted: (req, res) => {
-    const { escrowId } = req.query;
+    let { escrowId } = req.query;
 
     if (escrowId) {
-      steem.api.getEscrow(req.session.user.name, parseInt(escrowId, 10), async (err, result) => {
-        if (!err && result !== null) {
-          await Service.updateOne({ _id: req.body.service }, { $inc: { orders: 1 } });
-          res.render('thankyou', { title: 'Thank you.' });
-        } else {
-          req.flash('error', 'We could not find any transaction associated with these details.', false);
-          res.redirect('/dashboard');
-        }
-      });
+      escrowId = parseInt(escrowId, 10);
+
+      Order.findOne({ escrow_id: escrowId, buyer: req.session.user._id, completed: false })
+        .populate('buyer', 'username')
+        .populate('seller', 'username')
+        .exec((err, order) => {
+          if (err) {
+            res.redirect('/dashboard');
+          } else {
+            steem.api.getEscrow(order.buyer.username, escrowId, async (err, result) => {
+              if (!err && result !== null) {
+                steem.api.getAccountHistory(order.buyer.username, -1, 50, (err, result) => {
+                  if (!err && result.length > 0) {
+                    result.reverse();
+                    result.forEach(async (history) => {
+                      if (history[1].op[0] === 'escrow_transfer') {
+                        const escrowData = history[1].op[1];
+
+                        if (escrowData.escrow_id === escrowId
+                          && escrowData.from === order.buyer.username
+                          && escrowData.to === order.seller.username) {
+                          await Service.updateOne({ escrow_id: escrowId }, { $inc: { orders: 1 } });
+                        }
+                      }
+                    });
+                    res.render('thankyou', { title: 'Thank you.' });
+                  } else {
+                    req.flash('error', 'We could not find any transaction in your account history.', false);
+                    res.redirect('/dashboard');
+                  }
+                });
+              }
+            });
+          }
+        });
     } else {
       res.redirect('/dashboard');
     }
+  },
+
+  getOrderStatus: async (req, res) => {
+    let { escrowId } = req.query;
+    const { action } = req.query;
+
+    escrowId = parseInt(escrowId, 10);
+
+    const order = await Order.findOne({
+      $or: [
+        { $or: [{ escrow_id: escrowId, seller: req.session.user._id }] },
+        { $or: [{ escrow_id: escrowId, buyer: req.session.user._id }] },
+      ],
+    })
+      .populate('buyer', 'username')
+      .populate('seller', 'username');
+
+    steem.api.getAccountHistory(req.session.user.name, -1, 10, (err, result) => {
+      if (!err && result.length > 0) {
+        result.reverse();
+
+        switch (action) {
+          case 'escrow_approve':
+            forEach(result, (history) => {
+              if (history[1].op[0] === 'escrow_approve') {
+                const escrowData = history[1].op[1];
+
+                if (escrowData.escrow_id === escrowId && escrowData.who === req.session.user.name) {
+                  order.escrow_active = escrowData.approve;
+                  order.seller_approved = escrowData.approve;
+                  order.save();
+                }
+              }
+            });
+
+            res.redirect('/dashboard');
+
+            break;
+
+          case 'escrow_dispute':
+            forEach(result, (history) => {
+              if (history[1].op[0] === 'escrow_dispute') {
+                const escrowData = history[1].op[1];
+
+                if (escrowData.escrow_id === escrowId && escrowData.who === req.session.user.name) {
+                  order.disputed = true;
+                  order.save();
+                }
+              }
+            });
+
+            res.redirect('/dashboard');
+
+            break;
+
+          case 'escrow_release':
+            forEach(result, (history) => {
+              if (history[1].op[0] === 'escrow_release') {
+                const escrowData = history[1].op[1];
+                console.log(escrowData);
+                if (escrowData.escrow_id === escrowId && escrowData.who === req.session.user.name) {
+                  order.completed = true;
+                  order.save();
+                }
+              }
+            });
+
+            res.redirect('/dashboard');
+
+            break;
+
+          default:
+
+            break;
+        }
+      } else {
+        console.log(err);
+      }
+    });
   },
 };

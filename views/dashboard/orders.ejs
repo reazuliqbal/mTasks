@@ -49,19 +49,21 @@
                     <tr>
                         <td><%= order.escrow_id %></td>
                         <td><a href="/@<%= order.seller.username %>/<%= order.service.slug %>"><%= order.service.title %></a></td>
-                        <td><%= order.service.price %></td>
+                        <td><%= order.service.price %> <%= order.service.currency %></td>
                         <td><%= order.buyer.username %></td>
                         <td><%= order.createdAt.toDateString() %></td>
                         <td><%= status %></td>
                         <td>
                         <% if (!order.completed) { %>
-                            <% if(!order.seller_approved) {%>
+                            <% if(order.buyer.username !== session.user.name && !order.seller_approved) {%>
                                 <a href="#orderManagement" class="btn modal-trigger waves-effect waves-light green" data-action="accept" data-id="<%= order._id %>">Accept</a>
                                 <a href="#orderManagement" class="btn modal-trigger waves-effect waves-light red" data-action="decline" data-id="<%= order._id %>">Decline</a>
-                            <% } else if (order.agent_approved && !order.delivered || order.modification_requested) { %>
+                            <% } else if (order.seller.username === session.user.name && order.agent_approved && (!order.delivered || order.modification_requested)) { %>
                                 <a href="#orderManagement" class="btn modal-trigger waves-effect waves-light green" data-action="deliver" data-id="<%= order._id %>">Deliver</a>
                                 <a href="#orderManagement" class="btn modal-trigger waves-effect waves-light red" data-action="dispute" data-id="<%= order._id %>">Dispute</a>
-                            <% } else if (order.delivered && order.modification_requested) { %>
+                            <% } else if (order.buyer.username === session.user.name && order.delivered && !order.completed) { %>
+                                <a href="#orderManagement" class="btn modal-trigger waves-effect waves-light green" data-action="release" data-id="<%= order._id %>">Accept Delivery</a>
+                                <a href="#orderManagement" class="btn modal-trigger waves-effect waves-light black-text amber" data-action="request_modification" data-id="<%= order._id %>">Request Mod</a>
                                 <a href="#orderManagement" class="btn modal-trigger waves-effect waves-light red" data-action="dispute" data-id="<%= order._id %>">Dispute</a>
                             <% } %>
                         <% } %>
@@ -109,7 +111,7 @@
             <input type="hidden" name="id">
             <div class="modal-content">
                 <h4>Are you sure?</h4>
-                <p id="warning"></p>
+                <p id="warning" class="flow-text"></p>
             </div>
             <div class="modal-footer">
                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
@@ -117,7 +119,7 @@
             </div>
         </form>
     </div>
-    
+
         <div id="orderManagement" class="modal">
             <form action="/dashboard/manage-order" method="post">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
@@ -125,11 +127,7 @@
                 <input type="hidden" name="orderId">
                 <div class="modal-content">
                     <h4>Are you sure?</h4>
-                    <p id="warningOm"></p>
-                    <div class="input-field">
-                        <input type="text" name="wif" required>
-                        <label for="wif">Active Private Key</label>
-                    </div>
+                    <p id="warningOm" class="flow-text"></p>
                 </div>
                 <div class="modal-footer">
                     <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>

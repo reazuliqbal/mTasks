@@ -10,4 +10,6 @@ router.route('/')
 
 router.get('/completed', util.isAuthenticated, OrderController.getOrderCompleted);
 
+router.get('/order-status', util.isAuthenticated, OrderController.getOrderStatus);
+
 module.exports = router;
