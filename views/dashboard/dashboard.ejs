@@ -46,7 +46,7 @@
     <div class="section">
         <h2>Your Services</h2>
         <div class="divider"></div>
-        
+
         <% if(services.length > 0) { %>
         <table class="highlight responsive-table">
             <thead>
@@ -82,7 +82,7 @@
         <p class="flow-text">You have not added any service yet. <a href="/dashboard/add">Click here</a> to add one now.</p>
         <% } %>
     </div>
-    
+
     <div class="section">
         <h2>Placed Orders</h2>
         <div class="divider"></div>
@@ -146,8 +146,8 @@
         <p class="flow-text">You do not have any active order. View <a href="/dashboard/manage-orders/placed">Order History</a>.</p>
         <% } %>
     </div>
-    
-    
+
+
     <% if(services.length > 0) { %>
     <div class="section">
         <h2>Received Orders</h2>
@@ -243,11 +243,7 @@
             <input type="hidden" name="orderId">
             <div class="modal-content">
                 <h4>Are you sure?</h4>
-                <p id="warningOm"></p>
-                <div class="input-field">
-                    <input type="text" name="wif" required>
-                    <label for="wif">Active Private Key</label>
-                </div>
+                <p id="warningOm" class="flow-text"></p>
             </div>
             <div class="modal-footer">
                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>

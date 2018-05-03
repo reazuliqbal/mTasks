@@ -1,8 +1,10 @@
 const slugify = require('slugify');
 const Joi = require('joi');
+const { forEach } = require('p-iteration');
 const config = require('../config');
 const steem = require('../modules/steem');
 const steemconnect = require('../modules/steemconnect');
+const { getSiteUrl } = require('../modules/utils');
 const User = require('../models/User');
 const Category = require('../models/Category');
 const Service = require('../models/Service');
@@ -12,26 +14,33 @@ const JoiSchema = require('../modules/joiSchemas');
 module.exports = {
   getDashboard: async (req, res) => {
     const services = await Service.find({ seller: req.session.user._id }).populate('category').populate('seller', 'username');
-    const placedOrders = await Order.find({ buyer: req.session.user._id, completed: false, escrow_active: true }).populate('seller', 'username').populate('service', 'title price currency slug');
-    const ordersCompleted = await Order.find({
-      seller: req.session.user._id, completed: true,
-    }).count();
+    const ordersCompleted = await Order.ordersCompleted(req.session.user._id);
     const totalEarned = await Order.totalEarned(req.session.user._id);
     const pendingEarnings = await Order.pendingEarnings(req.session.user._id);
 
-    const receivedOrders = await Order.find({ seller: req.session.user._id, completed: false, escrow_active: true }).populate('buyer', 'username').populate('service', 'title price currency slug');
+    const placedOrders = await Order.getOrders(req.session.user._id, 'placed');
 
-    receivedOrders.forEach((order) => {
-      steem.api.getEscrow(order.buyer.username, order.escrow_id, (err, result) => {
-        if (result != null) {
+    const receivedOrders = await Order.getOrders(req.session.user._id, 'received');
+
+    forEach(receivedOrders, (order) => {
+      steem.api.getEscrow(order.buyer.username, order.escrow_id, async (err, result) => {
+        if (result !== null && typeof result === 'object') {
+          result.escrow_active = true;
+          await Order.updateOrder(order._id, result);
+        } else {
           Order.findById(order._id, () => {
-            order.seller_approved = result.to_approved;
-            order.agent_approved = result.agent_approved;
-            order.disputed = result.disputed;
-            order.ratification_deadline = result.ratification_deadline;
-            order.escrow_expiration = result.escrow_expiration;
+            order.escrow_active = false;
             order.save();
           });
+        }
+      });
+    });
+
+    forEach(placedOrders, (order) => {
+      steem.api.getEscrow(order.buyer.username, order.escrow_id, async (err, result) => {
+        if (result !== null && typeof result === 'object') {
+          result.escrow_active = true;
+          await Order.updateOrder(order._id, result);
         } else {
           Order.findById(order._id, () => {
             order.escrow_active = false;
@@ -154,6 +163,7 @@ module.exports = {
       }
     });
   },
+
   postManageService: async (req, res) => {
     switch (req.body.action) {
       case 'delete':
@@ -200,6 +210,7 @@ module.exports = {
         break;
     }
   },
+
   getManageOrders: (req, res) => {
     const perPage = 20;
     const page = req.params.page || 1;
@@ -240,64 +251,58 @@ module.exports = {
         });
       });
   },
+
   postManageOrder: async (req, res) => {
-    const { orderId, action, wif } = req.body;
+    const { orderId, action } = req.body;
 
     const order = await Order.findById({ _id: orderId }).populate('seller', 'username').populate('buyer', 'username');
 
     switch (action) {
-      case 'accept':
-        steem.broadcast.escrowApprove(
-          wif, order.buyer.username, order.seller.username, config.site.agent_account,
-          req.session.user.name, order.escrow_id, true, async (err, result) => {
-            if (!err && result.ref_block_num) {
-              await Order.updateOne({ _id: orderId }, { $set: { seller_approved: true } });
+      case 'accept': {
+        const returnURL = `${getSiteUrl(req)}/order/order-status/?action=escrow_approve&escrowId=${order.escrow_id}`;
 
-              req.flash('success', 'You successfully accepted the order.', false);
-              res.redirect('/dashboard');
-            } else {
-              console.log(err);
-              req.flash('error', 'Operation is not completed. There was an error.', false);
-              res.redirect('/dashboard');
-            }
-          },
-        );
+        const hotSignLink = steemconnect.sign('escrow_approve', {
+          from: order.buyer.username,
+          to: order.seller.username,
+          agent: config.site.agent_account,
+          who: req.session.user.name,
+          escrow_id: order.escrow_id,
+          approve: 1,
+        }, returnURL);
+
+        res.redirect(hotSignLink);
+      }
         break;
 
-      case 'decline':
-        steem.broadcast.escrowApprove(
-          wif, order.buyer.username, order.seller.username, config.site.agent_account,
-          req.session.user.name, order.escrow_id, false, async (err, result) => {
-            if (!err && result.ref_block_num) {
-              await Order.updateOne({ _id: orderId }, { $set: { seller_approved: false } });
+      case 'decline': {
+        const returnURL = `${getSiteUrl(req)}/order/order-status/?action=escrow_approve&escrowId=${order.escrow_id}`;
 
-              req.flash('info', 'You successfully declined the order.', false);
-              res.redirect('/dashboard');
-            } else {
-              console.log(err);
-              req.flash('error', 'Operation was not successful. There was an error.', false);
-              res.redirect('/dashboard');
-            }
-          },
-        );
+        const hotSignLink = steemconnect.sign('escrow_approve', {
+          from: order.buyer.username,
+          to: order.seller.username,
+          agent: config.site.agent_account,
+          who: req.session.user.name,
+          escrow_id: order.escrow_id,
+          approve: 0,
+        }, returnURL);
+
+        res.redirect(hotSignLink);
+      }
         break;
 
-      case 'dispute':
-        steem.broadcast.escrowDispute(
-          wif, order.buyer.username, order.seller.username, config.site.agent_account,
-          req.session.user.name, order.escrow_id, false, async (err, result) => {
-            if (!err && result.ref_block_num) {
-              await Order.updateOne({ _id: orderId }, { $set: { disputed: true } });
+      case 'dispute': {
+        const returnURL = `${getSiteUrl(req)}/order/order-status/?action=escrow_dispute&escrowId=${order.escrow_id}`;
 
-              req.flash('info', 'You disputed the order. Please wait for agent to step in to mediate a solution.', false);
-              res.redirect('/dashboard');
-            } else {
-              console.log(err);
-              req.flash('error', 'Operation was not successful. There was an error.', false);
-              res.redirect('/dashboard');
-            }
-          },
-        );
+        const hotSignLink = steemconnect.sign('escrow_dispute', {
+          from: order.buyer.username,
+          to: order.seller.username,
+          agent: config.site.agent_account,
+          who: req.session.user.name,
+          escrow_id: order.escrow_id,
+        }, returnURL);
+
+        res.redirect(hotSignLink);
+      }
         break;
 
       case 'deliver':
@@ -355,23 +360,20 @@ module.exports = {
               steemAmount = `${parseFloat(order.service.price).toFixed(3)} ${order.service.currency}`;
             }
 
-            steem.broadcast.escrowRelease(
-              wif, order.buyer.username, order.seller.username, config.site.agent_account,
-              req.session.user.name, receiver, order.escrow_id, sbdAmount, steemAmount,
-              async (err, result) => {
-                if (!err && result.ref_block_num) {
-                  order.completed = true;
-                  order.save();
+            const returnURL = `${getSiteUrl(req)}/order/order-status/?action=escrow_release&escrowId=${order.escrow_id}`;
 
-                  req.flash('success', `Order is marked as completed. Escrow fund is release to @${receiver}.`, false);
-                  res.redirect('/dashboard');
-                } else {
-                  console.log(err);
-                  req.flash('error', 'Operation was not successful. There was an error.', false);
-                  res.redirect('/dashboard');
-                }
-              },
-            );
+            const hotSignLink = steemconnect.sign('escrow_release', {
+              from: order.buyer.username,
+              to: order.seller.username,
+              agent: config.site.agent_account,
+              who: req.session.user.name,
+              receiver,
+              escrow_id: order.escrow_id,
+              sbd_amount: sbdAmount,
+              steem_amount: steemAmount,
+            }, returnURL);
+
+            res.redirect(hotSignLink);
           });
         break;
 
