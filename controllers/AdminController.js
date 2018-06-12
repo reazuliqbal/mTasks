@@ -90,6 +90,7 @@ module.exports = {
             if (!err) {
               category.name = value.name;
               category.slug = slugify(value.name, { remove: /[$*_+~.()'"!\-:@]/g, lower: true });
+              category.icon = value.icon;
               category.image = value.image;
               category.description = value.description;
 
@@ -110,6 +111,7 @@ module.exports = {
             name: value.name,
             slug: slugify(value.name, { remove: /[$*_+~.()'"!\-:@]/g, lower: true }),
             image: value.image,
+            icon: value.icon,
             description: value.description,
           });
           category.save((error) => {

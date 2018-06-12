@@ -5,6 +5,7 @@ module.exports = {
     _csrf: Joi.string(),
     name: Joi.string().min(3).max(80).required(),
     image: Joi.string().empty('').default('/images/category-image.jpg'),
+    icon: Joi.string().empty('').default('/images/icons/default.svg'),
     description: Joi.string().empty('').max(500),
   }),
   EditCategory: Joi.object().keys({
@@ -12,6 +13,7 @@ module.exports = {
     id: Joi.string(),
     name: Joi.string().min(3).max(80).required(),
     image: Joi.string().empty('').default('/images/category-image.jpg'),
+    icon: Joi.string().empty('').default('/images/icons/default.svg'),
     description: Joi.string().empty('').max(500),
   }),
   UserSettings: Joi.object().keys({

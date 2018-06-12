@@ -12,6 +12,10 @@ const CategorySchema = new Schema({
     required: true,
     unique: true,
   },
+  icon: {
+    type: String,
+    default: '/images/icons/default.svg',
+  },
   image: {
     type: String,
     default: '/images/category-image.jpg',
