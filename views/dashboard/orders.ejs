@@ -1,5 +1,6 @@
 <%- include('../partials/header') %>
 
+    <div class="container">
         <h1>Manage Orders</h1>
 
         <p class="right-align">
@@ -105,20 +106,20 @@
         <% } %>
 
         <div id="confirmation" class="modal">
-        <form action="/dashboard/manage-service" method="post">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-            <input type="hidden" name="action">
-            <input type="hidden" name="id">
-            <div class="modal-content">
-                <h4>Are you sure?</h4>
-                <p id="warning" class="flow-text"></p>
-            </div>
-            <div class="modal-footer">
-                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
-                <button id="actionBtn" type="submit" class="modal-action btn">Delete</button>
-            </div>
-        </form>
-    </div>
+            <form action="/dashboard/manage-service" method="post">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                <input type="hidden" name="action">
+                <input type="hidden" name="id">
+                <div class="modal-content">
+                    <h4>Are you sure?</h4>
+                    <p id="warning" class="flow-text"></p>
+                </div>
+                <div class="modal-footer">
+                    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+                    <button id="actionBtn" type="submit" class="modal-action btn">Delete</button>
+                </div>
+            </form>
+        </div>
 
         <div id="orderManagement" class="modal">
             <form action="/dashboard/manage-order" method="post">
@@ -135,5 +136,6 @@
                 </div>
             </form>
         </div>
+    </div>
 
 <%- include('../partials/footer') %>

@@ -8,13 +8,13 @@
     <!--Import Google Icon Font-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Roboto:400,500" rel="stylesheet">
     <!--Import materialize.css-->
-    <link href="/css/materialize.min.css"  media="screen,projection" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
     <link href="/css/main.css" rel="stylesheet">
 
 </head>
 <body>
     <div class="navbar-fixed">
-        <nav class="purple darken-3">
+        <nav class="blue-grey darken-4">
             <div class="nav-wrapper">
                 <div class="container">
                 <a href="/" class="brand-logo">mTasks</a>
@@ -49,7 +49,6 @@
         <li><a href="/logout">Logout</a></li>
     <% } %>
     </ul>
-    
-    <main class="container">
-        <div class="content-wrapper">
+
+    <main class="content-wrapper">
         <%- locals.flash %>
