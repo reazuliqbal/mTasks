@@ -1,5 +1,6 @@
 body {
-  font-family: 'Roboto', sans-serif; }
+  font-family: 'Roboto', sans-serif;
+  background-color: #f7f7f7; }
 
 strong {
   font-weight: 500; }
@@ -40,6 +41,7 @@ h2 {
   text-shadow: 1px 1px 2px black;
   position: relative;
   overflow: hidden;
+  margin-top: -50px;
   margin-bottom: 30px; }
   .page-header-bg h1,
   .page-header-bg h2 {
@@ -58,25 +60,85 @@ h2 {
 .profile-cover {
   padding: 30px 20px;
   text-align: center;
+  margin-top: -50px;
   margin-bottom: 50px;
   color: #fff;
-  background: #22c1c3;
-  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #fdbb2d, #22c1c3);
-  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, #fdbb2d, #22c1c3);
-  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */ }
-  .profile-cover .profile-image {
-    height: 120px;
-    width: 120px;
-    border: 3px solid #fff;
-    border-radius: 50%;
-    background-color: #fff; }
+  background-color: #01579b;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative; }
+  .profile-cover a {
+    color: #fff; }
+    .profile-cover a:hover, .profile-cover a:focus, .profile-cover a:active {
+      color: #fff; }
+  .profile-cover:before {
+    background: rgba(0, 0, 0, 0.3);
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    z-index: -1; }
+
+.profile-image {
+  height: 120px;
+  width: 120px;
+  border: 3px solid #f7f7f7;
+  border-radius: 50% !important;
+  background-color: transparent;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto; }
+  .profile-image img {
+    display: inline-block;
+    max-width: 100%;
+    height: auto;
+    vertical-align: middle; }
+
+.profile-description {
+  margin-top: -50px;
+  background-color: #eeeeee;
+  padding: 50px 25px;
+  height: 100%; }
+  @media only screen and (min-width: 768px) {
+    .profile-description {
+      min-height: 500px;
+      margin-bottom: -70px; } }
 
 .service img {
   max-width: 100%;
   height: auto;
   display: block; }
+
+.category-card {
+  box-shadow: none;
+  background-color: transparent; }
+  .category-card .card-image img {
+    width: 120px;
+    display: inline-block;
+    margin: 0 auto; }
+  .category-card .card-action {
+    text-align: center;
+    border-top: none;
+    padding: 0; }
+    .category-card .card-action a {
+      color: #263238 !important;
+      text-transform: inherit !important;
+      margin: 0 !important;
+      font-size: 18px;
+      display: inline-block;
+      padding: 16px 24px; }
+
+.service-card .card-image {
+  min-height: 200px;
+  background-color: #fff;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat; }
+
+.service-card .card-action {
+  text-align: center; }
 
 textarea.materialize-textarea {
   min-height: 200px; }
@@ -92,5 +154,57 @@ textarea.materialize-textarea {
 
 .strong-text {
   font-weight: 500 !important; }
+
+.homepage-header {
+  background-color: #000;
+  background-image: url("/images/header.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 450px;
+  color: #fff;
+  position: relative; }
+  .homepage-header nav {
+    background-color: transparent;
+    box-shadow: none; }
+  .homepage-header .homepage-search {
+    margin-top: 100px;
+    position: relative;
+    z-index: 100;
+    text-align: center; }
+    .homepage-header .homepage-search ::-webkit-input-placeholder {
+      color: #000; }
+    .homepage-header .homepage-search ::-moz-placeholder {
+      color: #000; }
+    .homepage-header .homepage-search :-ms-input-placeholder {
+      color: #000; }
+    .homepage-header .homepage-search input:-moz-placeholder {
+      color: #000; }
+    .homepage-header .homepage-search .input-box {
+      display: inline-block;
+      min-width: 300px; }
+      @media only screen and (min-width: 1200px) {
+        .homepage-header .homepage-search .input-box {
+          min-width: 400px; } }
+    .homepage-header .homepage-search input {
+      background-color: #fff;
+      border-radius: 3px;
+      padding: 5px 20px;
+      box-sizing: border-box;
+      height: 54px; }
+    .homepage-header .homepage-search button {
+      margin-top: -5px; }
+  .homepage-header:after {
+    background: rgba(0, 0, 0, 0.3);
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0; }
+
+.highlight {
+  padding-top: 50px;
+  padding-bottom: 50px; }
 
 /*# sourceMappingURL=main.css.map */
