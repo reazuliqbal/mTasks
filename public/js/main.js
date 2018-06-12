@@ -99,3 +99,16 @@ $(document).ready(function() {
       $('#orderManagement input[name=orderId]').val('');
     }
 });
+
+$(document).ready(function(){
+  $(this).scrollTop(0);
+
+  $(window).scroll(function(){
+  	var scroll = $(window).scrollTop();
+	  if (scroll > 50) {
+		  $("#hp-nav").css({ 'background-color': '#263238' }).addClass('blue-grey darken-4');
+	  } else {
+	    $("#hp-nav").css({ 'background-color': 'transparent' }).removeClass('blue-grey darken-4');
+	  }
+  })
+})

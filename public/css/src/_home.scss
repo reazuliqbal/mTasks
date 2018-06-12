@@ -1,0 +1,60 @@
+.homepage-header {
+    background-color: #000;
+    background-image: url('/images/header.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 450px;
+    color: #fff;
+    position: relative;
+
+    nav {
+        background-color: transparent;
+        box-shadow: none;
+    }
+    .homepage-search {
+        margin-top: 100px;
+        position: relative;
+        z-index: 100;
+        text-align: center;
+
+        ::-webkit-input-placeholder { color:#000; }
+        ::-moz-placeholder { color:#000; }
+        :-ms-input-placeholder { color:#000; }
+        input:-moz-placeholder { color:#000; }
+
+        .input-box {
+            display: inline-block;
+            min-width: 300px;
+
+            @include min-screen('1200px') {
+                min-width: 400px;
+            }
+        }
+
+        input {
+            background-color: #fff;
+            border-radius: 3px;
+            padding: 5px 20px;
+            box-sizing: border-box;
+            height: 54px;
+        }
+        button {
+            margin-top: -5px;
+        }
+    }
+
+    &:after {
+        background: rgba(0, 0, 0, .3);
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+    }
+}
+.highlight {
+    padding-top: 50px;
+    padding-bottom: 50px;
+}

@@ -1,39 +1,159 @@
-<%- include('partials/header'); %>
-        <h3 class="center-align">Latest Services</h3>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= title %></title>
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Roboto:400,500" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
+    <link href="/css/main.css" rel="stylesheet">
+</head>
+<body>
+    <header class="homepage-header">
+        <div class="navbar-fixed">
+            <nav id="hp-nav">
+                <div class="nav-wrapper">
+                    <div class="container">
+                        <a href="/" class="brand-logo">mTasks</a>
+                        <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+                        <ul class="right hide-on-med-and-down">
+                            <% if(session.admin) { %>
+                            <li><a href="/admin">Admin Dashboard</a></li>
+                            <% } else if(!session.user) { %>
+                            <li><a class="btn-flat purple white-text" href="/connect">Login</a></li>
+                            <% } else { %>
+                            <li><a class="dropdown-trigger" href="#!" data-target="dropdown1"><%= session.user.name %><i class="material-icons right">arrow_drop_down</i></a></li>
+                            <% } %>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
 
-        <div class="row">
-        <% services.forEach((service) => { %>
-            <div class="col s12 m6 l3">
-                <div class="card">
-                    <div class="card-image">
-                        <img src="<%= service.cover_image %>">
+        <ul id="dropdown1" class="dropdown-content">
+            <li><a href="/dashboard">Dashboard</a></li>
+            <li><a href="/dashboard/add">Add Service</a></li>
+            <li><a href="/dashboard/settings">Settings</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+        <ul class="sidenav" id="mobile-demo">
+        <% if(! session.user) { %>
+            <li><a href="/connect">Login</a></li>
+        <% } else { %>
+            <li><a href="/dashboard">Dashboard</a></li>
+            <li><a href="/dashboard/add">Add Service</a></li>
+            <li><a href="/dashboard/settings">Settings</a></li>
+            <li><a href="/logout">Logout</a></li>
+        <% } %>
+        </ul>
+
+        <div class="homepage-search">
+            <div class="container">
+                <h2>Find what you need, now!</h2>
+                <form action="/search" method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                    <div class="input-box">
+                        <input placeholder="What services are you looking for?" name="query" type="text" class="validate">
                     </div>
-                    <div class="card-content">
-                        <p><strong><%= service.title %></strong> for <strong><%= service.price %> <%= service.currency %></strong></p>Offered by <a href="/@<%= service.seller.username %>"><%= service.seller.username %></a>
+                    <button class="btn purple waves-effect waves-purple btn-large" type="submit" name="action">Search</button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <main class="content-wrapper">
+        <div class="container center">
+            <h2 class="gray-text margin-top-50">Explore the Marketplace</h2>
+            <p class="small gray-text">Checkout what people are offering</p>
+
+            <div class="row margin-top-30">
+            <% categories.forEach((category) => { %>
+                <div class="col s6 l3">
+                    <div class="card category-card">
+                        <div class="card-image">
+                            <img src="<%= category.icon %>">
+                        </div>
+                        <div class="card-action">
+                            <a href="/categories/<%= category.slug %>" class="category-card"><%= category.name %></a>
+                        </div>
                     </div>
-                    <div class="card-action">
-                        <a class="waves-effect waves-light btn" href="/@<%= service.seller.username %>/<%= service.slug %>">View</a>
+                </div>
+            <% }) %>
+            </div>
+        </div>
+
+        <div class="highlight blue-grey darken-4">
+            <div class="container center white-text">
+                <div class="row">
+                    <div class="col m4">
+                        <h4>Find</h4>
+                        <p>Neque temporibus tenetur optio libero pariatur magnam cumque sit ipsam? Magni, animi nemo!</p>
+                    </div>
+                    <div class="col m4">
+                        <h4>Order</h4>
+                        <p>Neque temporibus tenetur optio libero pariatur magnam cumque sit ipsam? Magni, animi nemo!</p>
+                    </div>
+                    <div class="col m4">
+                        <h4>Pay</h4>
+                        <p>Neque temporibus tenetur optio libero pariatur magnam cumque sit ipsam? Magni, animi nemo!</p>
                     </div>
                 </div>
             </div>
-        <% }) %>
         </div>
 
-        <h3 class="center-align">Popular Categories</h3>
+        <div class="container center">
+            <h2 class="gray-text margin-top-50">Best Sellers</h2>
+            <p class="small gray-text">Checkout what people are buying</p>
 
-        <div class="row">
-        <% categories.forEach((category) => { %>
-            <div class="col s6 l3">
-                <div class="card">
-                    <div class="card-image">
-                        <img src="<%= category.image %>">
-                    </div>
-                    <div class="card-action">
-                        <a href="/categories/<%= category.slug %>" class="category-card"><%= category.name %></a>
+            <div class="row">
+            <% services.forEach((service) => { %>
+                <div class="col s12 m6 l4 xl3">
+                    <div class="card service-card">
+                        <div class="card-image" style="background-image:url('<%= service.cover_image %>')"></div>
+                        <div class="card-content">
+                            <p><strong><%= service.title %></strong> for <strong><%= service.price %> <%= service.currency %></strong></p>Offered by <a href="/@<%= service.seller.username %>"><%= service.seller.username %></a>
+                        </div>
+                        <div class="card-action">
+                            <a class="waves-effect waves-light btn" href="/@<%= service.seller.username %>/<%= service.slug %>">View</a>
+                        </div>
                     </div>
                 </div>
+            <% }) %>
             </div>
-        <% }) %>
+        </div>
+    </main>
+
+    <footer class="page-footer blue-grey darken-4">
+        <div class="container">
+            <div class="row">
+                <div class="col l6 s12">
+                    <h5 class="white-text">mTasks</h5>
+                    <p class="grey-text text-lighten-4">A Fiverr like platform built on top of STEEM blockchain using STEEM escrow functionalities. This site is built as a demo, using it to offer your services in not recommended but you can.</p>
+                    <h6 class="grey-text text-lighten-4 uppercase">This site is not in production state.</h6>
+                    <p><sup>Background credit goes to <a href="https://www.pexels.com/photo/1-teacup-with-saucer-and-magazine-on-white-surface-818650/">Pexels</a> and Icons were taken from <a href="https://www.flaticon.com/packs/essential-set-2/4">Flaticon</a></sup></p>
+                </div>
+                <div class="col l3 offset-l3 s12">
+                    <ul>
+                        <li><a class="grey-text text-lighten-3" href="#!">About</a></li>
+                        <li><a class="grey-text text-lighten-3" href="#!">Privacy Policy</a></li>
+                        <li><a class="grey-text text-lighten-3" href="#!">Terms and Conditions</a></li>
+                        <li><a class="grey-text text-lighten-3" href="#!">Support Center</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
-<%- include('partials/footer'); %>
+        <div class="footer-copyright">
+            <div class="container">
+                <p class="grey-text text-lighten-4 center">made with <span style="color: #FF5A79; font-size: 18px;">❤</span> by <a href="https://steemit.com/@reazuliqbal" class="text-orange">@reazuliqbal</a></p>
+            </div>
+        </div>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html>
