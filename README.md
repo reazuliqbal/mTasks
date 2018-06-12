@@ -32,7 +32,7 @@ For production use:
 
 For development use:
 
-```npm run devstart```
+```npm run dev```
 
 ## Technologies used
 
@@ -43,17 +43,11 @@ For development use:
 - Steem JS (0.7.1)
 - Materialize (1.0.0-alpha.4)
 
-## Limitations
-
-- I was not able to Hot sign or create Escrow Transfer through SteemConnect SDK. If there is way of doing it, please let me know or send a pull request.
-
 ## TODO
 
 Currently I am considering it as a working proof of concept. Lots of work to be done including but not limited to:
 
-- Adding SteemConnect Escrow transfer (Not requiring user's active private key)
 - Adding on site cover image upload
-- Adding form fields and other validations
 - Adding in-site project delivery
 - Adding seller and buyer rating system
 - Adding all the required dashboard features for buyer, seller, and agent
