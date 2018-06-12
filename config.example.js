@@ -2,10 +2,10 @@ const config = {
   port: 3000,
   auth: {
     client_id: 'steem.app', // SteemConnect app name
-    redirect_uri: process.env.AUTH_REDIRECT_URL, // SteemConnect redirect URL
+    redirect_uri: 'https://steemmtask.herokuapp.com/connect', // SteemConnect redirect URL
   },
-  order: {
-    redirect_uri: process.env.ORDER_REDIRECT_URL,
+  session: {
+    secret: 'keep_it_secure_and_secret',
   },
   site: {
     agent_fee: 0.100, // Sites fee for every order
@@ -16,4 +16,3 @@ const config = {
 };
 
 module.exports = config;
-
