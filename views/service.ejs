@@ -1,40 +1,64 @@
 <%- include('partials/header') %>
-        <div class="row">
-            <div class="col l7 xl8">
-                <article class="service">
-                    <header>
-                        <h1><%= title %></h1>
-                        <p class="flow-text">Created on <%= content.created %> by <strong><a href="/@<%= service.seller.username %>"><%= service.seller.username %></a> (<%= content.author_reputation %>)</strong> in <a href="/categories/<%= service.category.slug %>"><%= service.category.name %></a></p>
-                    </header>
-                    <div class="flow-text"><%- content.body %></div>
-                </article>
-            </div>
-            <div class="col l5 xl4">
-                <div class="card-panel margin-top-50">
-                <h4>Price: <%= service.price %> <%= service.currency %></h4>
-                <% if (session.user) { %>
-                    <% if (service.paused !== true) { %>
-                    <button data-target="order-modal" class="btn green waves-effect waves-light modal-trigger btn-large margin-top-50">Order It <i class="material-icons medium right">shopping_cart</i></button>
+        <div class="container">
+            <div class="row">
+                <div class="col l7 xl8">
+                    <article class="service">
+                        <header>
+                            <h1><%= title %></h1>
+                            <p class="flow-text">Created on <%= content.created %> in <a href="/categories/<%= service.category.slug %>"><%= service.category.name %></a></p>
+                        </header>
+                        <div class="flow-text"><%- content.body %></div>
+                    </article>
+                </div>
+                <div class="col l5 xl4">
+                    <div class="card-panel center margin-top-50">
+                        <%
+                        let name = service.seller.name;
+                        let profile_image = `https://robohash.org/${service.seller.username}.png?size=120x120`;
+                        let about = '';
+                        let location = '';
+                        if (seller.json_metadata) {
+                            let json_metadata = JSON.parse(seller.json_metadata);
+                            profile_image = (json_metadata.profile.profile_image) ? json_metadata.profile.profile_image : profile_image;
+                            about = (json_metadata.profile.about) ? json_metadata.profile.about : about;
+                            location = (json_metadata.profile.location) ? json_metadata.profile.location : location;
+                            name = (json_metadata.profile.name) ? json_metadata.profile.name : name;
+                        }
+                        %>
 
-                    <div id="order-modal" class="modal">
-                        <form action="/order" method="post">
-                            <div class="modal-content">
-                                <h4>Are you sure you want to order this service?</h4>
-                                <p class="flow-text">You will be redirected to SteemConnect to approve the transaction. Do not change URL parameters otherwise order will not be approved.</p>
-                                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-                                <input type="hidden" name="serviceId" value="<%= service._id %>">
+                        <div class="profile-image">
+                            <img src="<%= profile_image %>" alt="">
+                        </div>
+
+                        <h5><strong><a href="/@<%= service.seller.username %>"><%- (name) ? name: service.seller.username %></a> (<%= content.author_reputation %>)</strong></h5>
+                        <p class="grey-text"><%= about %></p>
+                        <p><%= location %></p>
+
+                        <h5 class="margin-top-30">Price: <%= service.price %> <%= service.currency %></h5>
+                        <% if (session.user) { %>
+                            <% if (service.paused !== true) { %>
+                            <button data-target="order-modal" class="btn green waves-effect waves-light modal-trigger btn-large margin-top-50">Order It <i class="material-icons medium right">shopping_cart</i></button>
+
+                            <div id="order-modal" class="modal">
+                                <form action="/order" method="post">
+                                    <div class="modal-content">
+                                        <h4>Are you sure you want to order this service?</h4>
+                                        <p class="flow-text">You will be redirected to SteemConnect to approve the transaction. Do not change URL parameters otherwise order will not be approved.</p>
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                                        <input type="hidden" name="serviceId" value="<%= service._id %>">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn green waves-effect waves-light">Order</button>
+                                    </div>
+                                </form>
                             </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btn green waves-effect waves-light">Order</button>
-                            </div>
-                        </form>
+                            <% } else { %>
+                            <p class="flow-text grey-text">The seller has paused this service.</p>
+                            <% } %>
+                        <% } else { %>
+                            <a href="/connect" class="btn  margin-top-50">Login to Order</a>
+                        <% } %>
                     </div>
-                    <% } else { %>
-                    <p class="flow-text grey-text">The seller has paused this service.</p>
-                    <% } %>
-                <% } else { %>
-                    <a href="/connect" class="btn">Login to Order</a>
-                <% } %>
                 </div>
             </div>
         </div>

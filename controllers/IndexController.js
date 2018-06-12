@@ -99,29 +99,16 @@ module.exports = {
         error.status = 404;
         next(error);
       } else {
-        steem.api.getAccounts([user.username], (err, result) => {
+        steem.api.getAccounts([user.username], (err, [result]) => {
           if (!err) {
-            let jsonMetadata = result[0].json_metadata;
-            let profileImage = '';
-            if (jsonMetadata === '') {
-              jsonMetadata = '{ "profile": { "profile_image": "" } }';
-            }
-            jsonMetadata = JSON.parse(jsonMetadata);
-
-            if (jsonMetadata.profile.profile_image) {
-              profileImage = jsonMetadata.profile.profile_image;
-            } else {
-              profileImage = `https://robohash.org/${user.username}.png?size=120x120`;
-            }
-
             res.render('profile', {
               title: (user.name) ? user.name : `Profile of @${user.username}`,
               user,
               steem: {
-                created: dateFormat(result[0].created, 'dddd, mmmm dS, yyyy, h:MM:ss TT'),
-                voting_power: result[0].voting_power,
-                reputation: steem.formatter.reputation(result[0].reputation),
-                profileImage,
+                created: dateFormat(result.created, 'mmmm d, yyyy'),
+                voting_power: `${(result.voting_power / 100)}%`,
+                reputation: steem.formatter.reputation(result.reputation),
+                json_metadata: result.json_metadata,
               },
             });
           } else {
@@ -134,14 +121,16 @@ module.exports = {
 
   getContent: async (req, res) => {
     const user = await User.findOne({ username: req.params.username });
-    Service.findOne({ slug: req.params.slug, seller: user._id }).populate('seller', 'username').populate('category').exec((err, service) => {
+    Service.findOne({ slug: req.params.slug, seller: user._id }).populate('seller').populate('category').exec(async (err, service) => {
       if (err) {
         console.log(err);
       } else if (service) {
-        steem.api.getContent(service.seller.username, req.params.slug, (err, content) => {
+        const [seller] = await steem.api.getAccountsAsync([service.seller.username]);
+        steem.api.getContent(service.seller.username, req.params.slug, async (err, content) => {
           res.render('service', {
             title: service.title,
             service,
+            seller,
             content: {
               url: content.url,
               body: md.render(content.body),

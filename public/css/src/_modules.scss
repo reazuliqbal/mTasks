@@ -1,5 +1,6 @@
 body {
     font-family: 'Roboto', sans-serif;
+    background-color: #f7f7f7;
 }
 strong {
     font-weight: 500;
@@ -41,6 +42,7 @@ h2 {
     text-shadow: 1px 1px 2px black;
     position: relative;
     overflow: hidden;
+    margin-top: -50px;
     margin-bottom: 30px;
 
     h1,
@@ -64,19 +66,60 @@ h2 {
 .profile-cover {
     padding: 30px 20px;
     text-align: center;
+    margin-top: -50px;
     margin-bottom: 50px;
     color: #fff;
-    background: #22c1c3;  /* fallback for old browsers */
-    background: -webkit-linear-gradient(to right, #fdbb2d, #22c1c3);  /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to right, #fdbb2d, #22c1c3); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background-color: #01579b;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
 
+    a {
+        color: #fff;
 
-    .profile-image {
-        height: 120px;
-        width: 120px;
-        border: 3px solid #fff;
-        border-radius: 50%;
-        background-color: #fff;
+        &:hover,
+        &:focus,
+        &:active, {
+            color: #fff;
+        }
+    }
+    &:before {
+        background: rgba(0, 0, 0, .3);
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        z-index: -1;
+    }
+}
+.profile-image {
+    height: 120px;
+    width: 120px;
+    border: 3px solid #f7f7f7;
+    border-radius: 50% !important;
+    background-color: transparent;
+    position: relative;
+    overflow: hidden;
+    margin: 0 auto;
+
+    img {
+        display: inline-block;
+        max-width: 100%;
+        height: auto;
+        vertical-align: middle;
+    }
+}
+.profile-description {
+    margin-top: -50px;
+    background-color: #eeeeee;
+    padding: 50px 25px;
+    height: 100%;
+
+    @include min-screen('768px') {
+        min-height: 500px;
+        margin-bottom: -70px;
     }
 }
 // SERVICE
@@ -85,6 +128,48 @@ h2 {
         max-width: 100%;
         height: auto;
         display: block;
+    }
+}
+
+// FLAT CARD
+.category-card {
+    box-shadow: none;
+    background-color: transparent;
+
+    .card-image img {
+        width: 120px;
+        display: inline-block;
+        margin: 0 auto;
+    }
+    .card-action {
+        text-align: center;
+        border-top: none;
+        padding: 0;
+
+        a {
+            color: #263238 !important;
+            text-transform: inherit !important;
+            margin: 0 !important;
+            font-size: 18px;
+            display: inline-block;
+            padding: 16px 24px;
+        }
+    }
+}
+// SERVICE CARD
+.service-card {
+    .card-image {
+        min-height: 200px;
+        background-color: #fff;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+    .card-content {
+        min-height: 180px;
+    }
+    .card-action {
+        text-align: center;
     }
 }
 // TEXT AREA

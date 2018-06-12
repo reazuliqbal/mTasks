@@ -1,62 +1,85 @@
 <%- include('partials/header'); %>
-        <div class="profile-cover">
-            <img class="profile-image" src="<%= steem.profileImage %>" alt="">
-            <h1><% if(user.name) { %>
-                <%= user.name %>
-            <% } else { %>
-                <%= user.username %>
-            <% } %>
-            </h1>
-            <p class="flow-text">Voting Power: <%= (steem.voting_power/100) %>%<br>Reputation: <%= steem.reputation %></p>
+        <%
+        let name = user.name;
+        let profile_image = `https://robohash.org/${user.username}.png?size=120x120`;
+        let cover_image = '';
+        let about = '';
+        let location = '';
+        if (steem.json_metadata) {
+            let json_metadata = JSON.parse(steem.json_metadata);
+            profile_image = (json_metadata.profile.profile_image) ? json_metadata.profile.profile_image : profile_image;
+            cover_image = (json_metadata.profile.cover_image) ? json_metadata.profile.cover_image : cover_image;
+            about = (json_metadata.profile.about) ? json_metadata.profile.about : about;
+            location = (json_metadata.profile.location) ? json_metadata.profile.location : location;
+            name = (json_metadata.profile.name) ? json_metadata.profile.name : name;
+        }
+        %>
+        <div class="profile-cover" style="background-image:url('<%- (cover_image) ? cover_image : '' %>');">
+            <div class="profile-image">
+                <img src="<%= profile_image %>" alt="">
+            </div>
+            <h5><strong><a href="/@<%= user.username %>"><%- (name) ? name: user.username %></a> (<%= steem.reputation %>)</strong></h5>
         </div>
 
-        <h2>Services Offered</h2>
-        <% if(user.services.length > 0) { %>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Price</th>
-                    <th>Orders</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-            <% user.services.forEach((service) => { %>
-                <tr>
-                    <td><a href="/@<%= user.username %>/<%= service.slug %>"><%= service.title %></a></td>
-                    <td><%= service.price %> <%= service.currency %></td>
-                    <td><%= service.orders %></td>
-                    <td><a href="/@<%= user.username %>/<%= service.slug %>" class="btn waves-effect waves-light">View</a>
-                    <% if(session.user) { %>
-                        <button data-target="order-modal" class="btn waves-effect waves-light modal-trigger">Order</button>
+        <div class="container">
+            <div class="row">
+                <div class="col l3">
+                    <div class="profile-description">
+                        <p><%= about %></p>
+                        <p>Location: <%= location %></p>
+                        <p>Joined: <%= (steem.created) %></p>
+                        <p>Voting Power: <%= (steem.voting_power) %></p>
+                    </div>
+                </div>
+                <div class="col l9">
+                    <% if(user.services.length > 0) { %>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Price</th>
+                                <th>Orders</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <% user.services.forEach((service) => { %>
+                            <tr>
+                                <td><a href="/@<%= user.username %>/<%= service.slug %>"><%= service.title %></a></td>
+                                <td><%= service.price %> <%= service.currency %></td>
+                                <td><%= service.orders %></td>
+                                <td><a href="/@<%= user.username %>/<%= service.slug %>" class="btn waves-effect waves-light">View</a>
+                                <% if(session.user) { %>
+                                    <button data-target="order-modal" class="btn waves-effect waves-light modal-trigger">Order</button>
 
-                        <div id="order-modal" class="modal">
-                            <form action="/order" method="post">
-                                <div class="modal-content">
-                                    <h4>Are you sure you want to order this service?</h4>
-                                    <input type="hidden" name="service" value="<%= service._id %>">
-                                    <input type="hidden" name="price" value="<%= service.price %>">
-                                    <input type="hidden" name="seller" value="<%= service.seller.username %>">
-                                    <div class="input-field">
-                                        <input type="text" name="wif" id="wif" class="validate" required>
-                                        <label for="wif">Active Private Key</label>
+                                    <div id="order-modal" class="modal">
+                                        <form action="/order" method="post">
+                                            <div class="modal-content">
+                                                <h4>Are you sure you want to order this service?</h4>
+                                                <input type="hidden" name="service" value="<%= service._id %>">
+                                                <input type="hidden" name="price" value="<%= service.price %>">
+                                                <input type="hidden" name="seller" value="<%= service.seller.username %>">
+                                                <div class="input-field">
+                                                    <input type="text" name="wif" id="wif" class="validate" required>
+                                                    <label for="wif">Active Private Key</label>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="submit" class="btn waves-effect waves-light">Order</button>
+                                            </div>
+                                        </form>
                                     </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn waves-effect waves-light">Order</button>
-                                </div>
-                            </form>
-                        </div>
+                                <% } %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                        </tbody>
+                    </table>
+                    <% } else { %>
+                        <p class="flow-text">This user has not created any services yet.</p>
                     <% } %>
-                    </td>
-                </tr>
-            <% }) %>
-            </tbody>
-        </table>
-        <% } else { %>
-            <p class="flow-text">This user has not created any services yet.</p>
-        <% } %>
-
+                </div>
+            </div>
+        </div>
 
 <%- include('partials/footer'); %>
