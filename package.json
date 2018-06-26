@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "nodemon ./bin/www"
+    "dev": "nodemon ./bin/www",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "dependencies": {
     "body-parser": "~1.18.3",
@@ -31,7 +33,8 @@
     "sc2-sdk": "^1.0.2",
     "serve-favicon": "~2.5.0",
     "slugify": "^1.3.0",
-    "steem": "^0.7.1"
+    "steem": "^0.7.1",
+    "snyk": "^1.85.0"
   },
   "devDependencies": {
     "eslint": "^4.19.1",
@@ -42,5 +45,6 @@
     "eslint-plugin-promise": "^3.8.0",
     "eslint-plugin-standard": "^3.1.0",
     "nodemon": "^1.17.5"
-  }
+  },
+  "snyk": true
 }
